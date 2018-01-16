@@ -429,7 +429,6 @@ func parseCOWS(cows string) (bool, *price) {
 
 		v, err := strconv.ParseFloat(part[:len(part)-1], 64)
 		if err != nil {
-			fmt.Println(err)
 			return false, nil
 		}
 
@@ -442,6 +441,8 @@ func parseCOWS(cows string) (bool, *price) {
 			rtn.W = v
 		case 's':
 			rtn.S = v
+		default:
+			return false, nil
 		}
 	}
 

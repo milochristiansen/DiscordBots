@@ -184,6 +184,7 @@ Reloads the data files and resets **all** settings to their defaults.
 				}
 				getSide(m.ChannelID).SpireList[spire] = state
 			}
+			s.ChannelMessageSend(m.ChannelID, "Spires set.")
 			return
 		}
 
