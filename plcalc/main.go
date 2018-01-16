@@ -79,7 +79,14 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		fs := new(axis2.FileSystem)
 		fs.Mount("data", sources.NewOSDir("./data"), true)
 		loadConfig(fs)
+		s.ChannelMessageSend(m.ChannelID, "(Re)loaded data files.")
 	case strings.HasPrefix(m.Content, "!help"):
+		line := strings.TrimSpace(strings.TrimPrefix(m.Content, "!help"))
+		if line == "" {
+			s.ChannelMessageSend(m.ChannelID, "-\nTry `!spires`, `!pattern <design ID>`, `!tweak 0c,0o,0w,0s`, `! 0c,0o,0w,0s`, or `!reload`\n\nType `!help full` for full help, `!help ids` for a list of valid spires and patterns.")
+			return
+		}
+
 		spires := []string{}
 		for id := range getSide(m.ChannelID).Spires {
 			spires = append(spires, id)
@@ -89,16 +96,28 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			patterns = append(patterns, id)
 		}
 
+		if line == "ids" {
+			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf(`
+-
+Valid spire IDs:
+`+"```"+`
+%v
+`+"```"+`
+The following patterns are currently loaded for %v:
+`+"```"+`
+%v
+`+"```"+`
+`, strings.Join(spires, ", "), getSide(m.ChannelID).Name, strings.Join(patterns, ", ")))
+			return
+		}
+
 		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf(`
-Set Spire: `+"`"+`!spires <list of comma separated spire IDs>`+"`"+`
--------------------------------------------------------------------------------
+-
+**Set Spire:** `+"`"+`!spires <list of comma separated spire IDs>`+"`"+`
 
-Set the spires used to calculate COWS. The special symbol '@' is the
-"spire" used by the Tweak Production ('!tweak') command, and 'Home' is all
-the home spires.
+Set the spires used to calculate COWS. The special symbol `+"`"+`@`+"`"+` is the "spire" used by the Tweak Production (`+"`"+`!tweak`+"`"+`) command, and `+"`"+`Home`+"`"+` is all the home spires.
 
-In addition to specifying the entire list of spires you want, you can
-activate or deactivate spires with the following syntax:
+In addition to specifying the entire list of spires you want, you can activate or deactivate spires with the following syntax:
 
 `+"```"+`
 !spires + <list of comma separated spire IDs>
@@ -119,15 +138,11 @@ Valid spire IDs:
 %v
 `+"```"+`
 
-Calculate Design: `+"`"+`!pattern <design ID>`+"`"+`
--------------------------------------------------------------------------------
+**Calculate Design:** `+"`"+`!pattern <design ID>`+"`"+`
 
-Calculate the COWS for a named pattern. This pattern needs to be
-defined in the data files.
+Calculate the COWS for a named pattern. This pattern needs to be defined in the data files.
 
-If you wish, you can specify a count for a pattern, or specify multiple
-patterns to calculate together. For example, calculate the cost of one
-pattern "Test-A" and two pattern "Test-B":
+If you wish, you can specify a count for a pattern, or specify multiple patterns to calculate together. For example, calculate the cost of one pattern "Test-A" and two pattern "Test-B":
 
 `+"```"+`
 # Test-A, Test-B:2
@@ -139,22 +154,21 @@ The following patterns are currently loaded for %v:
 %v
 `+"```"+`
 
-Tweak Production: `+"`"+`!tweak 0c,0o,0w,0s`+"`"+`
--------------------------------------------------------------------------------
+**Tweak Production:** `+"`"+`!tweak 0c,0o,0w,0s`+"`"+`
 
-Set a modifier for spire production. For this to take effect the '@'
-spire must be in the spire list.
+Set a modifier for spire production. For this to take effect the `+"`"+`@`+"`"+` spire must be in the spire list.
 
-Note that the COWS numbers may be partly specified, specified in any
-order, or even left blank. Any missing value is set to 0.
+Note that the COWS numbers may be partly specified, specified in any order, or even left blank. Any missing value is set to 0.
 	   
-Calculate from raw COWS: `+"`"+`! 0c,0o,0w,0s`+"`"+`
--------------------------------------------------------------------------------
+**Calculate from raw COWS:** `+"`"+`! 0c,0o,0w,0s`+"`"+`
 
 Calculate production line COWS from a raw COWS value.
 
-Note that the COWS numbers may be partly specified, specified in any
-order, or even left blank. Any missing value is set to 0.
+Note that the COWS numbers may be partly specified, specified in any order, or even left blank. Any missing value is set to 0.
+
+**Reload Data Files:** `+"`"+`!reload`+"`"+`
+
+Reloads the data files and resets **all** settings to their defaults.
 `, strings.Join(spires, ", "), getSide(m.ChannelID).Name, strings.Join(patterns, ", ")))
 		return
 	case strings.HasPrefix(m.Content, "!spires"):
