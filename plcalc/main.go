@@ -38,7 +38,7 @@ var (
 	APIKey string
 
 	WrethChan   = "340499300184489986"
-	KasgyreChan = ""
+	KasgyreChan = "340499239962542080"
 )
 
 func main() {
@@ -210,6 +210,7 @@ Reloads the data files and resets **all** settings to their defaults.
 			}
 			getSide(m.ChannelID).SpireList[spire] = true
 		}
+		s.ChannelMessageSend(m.ChannelID, "Spires set.")
 		return
 	case strings.HasPrefix(m.Content, "!pattern"):
 		line := strings.TrimSpace(strings.TrimPrefix(m.Content, "!pattern"))
@@ -261,7 +262,7 @@ Reloads the data files and resets **all** settings to their defaults.
 			}
 		}
 
-		out := "Raw Cost:\n\t" + cost.String()
+		out := "-\nRaw Cost:\n\t`" + cost.String() + "`"
 
 		for id, bonus := range bonuses {
 			bonusDef, ok := getSide(m.ChannelID).Bonuses[id]
@@ -271,7 +272,7 @@ Reloads the data files and resets **all** settings to their defaults.
 			}
 
 			runBonus(cost, bonus, bonusDef.Script)
-			out += "\nAfter Bonus:" + bonusDef.Name + "\n\t" + cost.String()
+			out += "\nAfter Bonus:" + bonusDef.Name + "\n\t`" + cost.String() + "`"
 		}
 
 		ok, result := calcCOWS(cost, m.ChannelID)
@@ -280,7 +281,7 @@ Reloads the data files and resets **all** settings to their defaults.
 			return
 		}
 
-		out += "\nFinal COWS Score:\n\t" + result.String()
+		out += "\nFinal COWS Score:\n\t`" + result.String() + "`"
 		s.ChannelMessageSend(m.ChannelID, out)
 		return
 	case strings.HasPrefix(m.Content, "!tweak"):
@@ -302,11 +303,9 @@ Reloads the data files and resets **all** settings to their defaults.
 				return
 			}
 
-			s.ChannelMessageSend(m.ChannelID, result.String())
+			s.ChannelMessageSend(m.ChannelID, "`"+result.String()+"`")
 			return
 		}
-
-		s.ChannelMessageSend(m.ChannelID, "Invalid input.")
 		return
 	}
 }
