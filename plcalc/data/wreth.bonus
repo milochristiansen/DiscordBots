@@ -1,0 +1,9 @@
+[
+	{
+		"Name": "IS Batch Bonus",
+		"Desc": "Itshanna select -20% ore batch bonus.",
+		"ID": "IS",
+
+		"Script": "wreth-bonus-is.lua"
+	}
+]

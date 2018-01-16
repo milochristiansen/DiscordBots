@@ -1,0 +1,91 @@
+
+[
+	{
+		"Name": "Marine Squad",
+		"Desc": "A squad of marines. Made up of 4 fireteams.",
+		"ID": "Squad",
+
+		"//": "No cost for now.",
+
+		"//": "All equipment costs are per-fireteam unless otherwise stated."
+	},
+
+	{
+		"Name": "Flint-Lock Pistol",
+		"Desc": "Inaccurate beyond spitting distance, incapable of dealing significant damage against hard armor, and liable to explode when used regularly even when given the most expert maintenance, the primary advantage of these weapons is that they can punch straight through shrouds like they didn't exist, and they're slowed by aethersilk officer's coats as much as by an ordinary silk shirt.",
+		"ID": "FL Pistol",
+
+		"Cost": {
+			"O": 2
+		}
+	},
+	{
+		"Name": "Flint-Lock Rifle",
+		"Desc": "Reasonably accurate, but slow to reload and still incapable of dealing significant damage against hard armor or ship hulls. These weapons still require expert maintenance to keep them from being single-use weapons, and sustained use still makes these weapons terrifyingly unreliable as service weapons. Still, an excellent choice for shooting through silk shirts and ignoring shrouds.",
+		"ID": "FL Rifle",
+
+		"Cost": {
+			"O": 3
+		}
+	},
+
+	{
+		"Name": "Grappling Gear",
+		"Desc": "Standard issue ropes and hooks for boarding vessels or climbing the outside of spires. Cumbersome if you're not going to use it.",
+		"ID": "Grapple",
+
+		"//": "Cost is for the whole squad.",
+		"Cost": {
+			"O": 1
+		}
+	},
+
+	{
+		"Name": "Aetheric Gauntlet",
+		"Desc": "A gauntlet (usually left handed to keep the right hand free) of copper and leather with a tiny weapons crystal locked into the palm. Capable of firing dozens of low energy blasts of aetheric energy at the user's discretion, but is difficult to aim and the copper cage used to draw heat from the crystal has the unsettling tendency to leave disfiguring gauntlet burns, melt, or set the user on fire if used too frequently.",
+		"ID": "Gauntlet",
+
+		"Cost": {
+			"C": 1,
+			"O": 1
+		}
+	},
+
+	{
+		"Name": "Bronze Cutlass",
+		"Desc": "A simple, heavy blade of bronze attached to a wooden handle. Simple, and brutally effective in close quarters.",
+		"ID": "Cutlass",
+
+		"Cost": {
+			"O": 0.5
+		}
+	},
+
+	{
+		"Name": "Aethersilk Vest",
+		"Desc": "A double layer vest of dense aethersilk, capable of absorbing a considerable amount of Aetheric energy. Can stop multiple point-blank shots from a gauntlet, but doesn't cover the arms, legs, or head. Does nothing against physical weapons or projectiles.",
+		"ID": "Officer Vest",
+
+		"Cost": {
+			"S": 1
+		}
+	},
+	{
+		"Name": "Aethersilk Vest",
+		"Desc": "A double layer vest of dense aethersilk, capable of absorbing a considerable amount of Aetheric energy. Can stop multiple point-blank shots from a gauntlet, but doesn't cover the arms, legs, or head. Does nothing against physical weapons or projectiles.",
+		"ID": "Leader Vests",
+
+		"Cost": {
+			"S": 5
+		}
+	},
+	{
+		"Name": "Aethersilk Vest",
+		"Desc": "A double layer vest of dense aethersilk, capable of absorbing a considerable amount of Aetheric energy. Can stop multiple point-blank shots from a gauntlet, but doesn't cover the arms, legs, or head. Does nothing against physical weapons or projectiles.",
+		"ID": "Squad Vests",
+
+		"Cost": {
+			"S": 16
+		}
+	}
+]

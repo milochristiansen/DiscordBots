@@ -1,0 +1,137 @@
+[
+	{
+		"Name": "Comet Pattern SkySkiff",
+		"Desc": "",
+		"ID": "Comet",
+
+		"Parts": [
+			"Skiff Hull",
+
+			"VS IS Core",
+			"VS IS Lift",
+			"IS Trim",
+			"IS Trim",
+			"IS Trim",
+			"IS Trim",
+
+			"Web",
+			"Web",
+
+			"SUCKERPUNCH",
+			"SUCKERPUNCH"
+		]
+	},
+	{
+		"Name": "Chimera Pattern Windrider",
+		"Desc": "",
+		"ID": "Chimera",
+
+		"Parts": [
+			"Windrider M Hull",
+
+			"M Core",
+			"S Lift",
+			"S Lift",
+
+			"IS Trim",
+			"IS Trim",
+			"IS Trim",
+			"IS Trim",
+
+			"IS Trim",
+			"IS Trim",
+			"IS Trim",
+			"IS Trim",
+
+			"IS Trim",
+			"IS Trim",
+			"IS Trim",
+			"IS Trim",
+
+			"Trim",
+			"Trim",
+			"Trim",
+			"Trim",
+
+			"Web",
+			"Web",
+			"Web",
+			"Web",
+
+			"Web",
+			"Web",
+			"Web",
+			"Web",
+
+			"Dragun",
+			"Dragun Mount",
+
+			"SUCKERPUNCH",
+			"SUCKERPUNCH",
+			"SUCKERPUNCH",
+			"SUCKERPUNCH",
+
+			"SUCKERPUNCH",
+			"SUCKERPUNCH",
+			"SUCKERPUNCH",
+			"SUCKERPUNCH"
+		]
+	},
+	{
+		"Name": "Mongoose Pattern Windrider",
+		"Desc": "",
+		"ID": "Mongoose",
+
+		"Parts": [
+			"Windrider Hull",
+
+			"S IS Core",
+			"S IS Core",
+			"S Lift",
+			"S Lift",
+
+			"IS Trim",
+			"IS Trim",
+			"IS Trim",
+			"IS Trim",
+
+			"IS Trim",
+			"IS Trim",
+			"IS Trim",
+			"IS Trim",
+
+			"IS Trim",
+			"IS Trim",
+			"IS Trim",
+			"IS Trim",
+
+			"Trim",
+			"Trim",
+			"Trim",
+			"Trim",
+
+			"Web",
+			"Web",
+			"Web",
+			"Web",
+
+			"Web",
+			"Web",
+			"Web",
+			"Web",
+
+			"Dragun",
+			"Dragun Mount",
+
+			"SUCKERPUNCH",
+			"SUCKERPUNCH",
+			"SUCKERPUNCH",
+			"SUCKERPUNCH",
+
+			"SUCKERPUNCH",
+			"SUCKERPUNCH",
+			"SUCKERPUNCH",
+			"SUCKERPUNCH"
+		]
+	}
+]

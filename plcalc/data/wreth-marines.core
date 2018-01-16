@@ -1,0 +1,85 @@
+[
+	{
+		"Name": "Marines A",
+		"Desc": "",
+		"ID": "Marine A",
+
+		"Parts": [
+			"Squad",
+
+			"Gauntlet",
+			"Gauntlet",
+			"Gauntlet",
+			"Gauntlet"
+		]
+	},
+	{
+		"Name": "Marines B",
+		"Desc": "",
+		"ID": "Marine B",
+
+		"Parts": [
+			"Squad",
+
+			"Suppressor",
+			"Suppressor",
+			"Suppressor",
+			"Suppressor",
+
+			"Venom Bolts"
+		]
+	},
+	{
+		"Name": "Marines C",
+		"Desc": "",
+		"ID": "Marine C",
+
+		"Parts": [
+			"Squad",
+
+			"Gauntlet",
+			"Gauntlet",
+			"Suppressor",
+			"Suppressor",
+
+			"Venom Bolts"
+		]
+	},
+	{
+		"Name": "Marines D",
+		"Desc": "",
+		"ID": "Marine D",
+
+		"Parts": [
+			"Squad",
+
+			"Pincushion",
+			"Pincushion",
+			"Pincushion",
+			"Pincushion",
+
+			"Venom Bolts"
+		]
+	},
+	{
+		"Name": "MOVE PLACE",
+		"Desc": "",
+		"ID": "MOVE PLACE",
+
+		"Parts": [
+			"MOVE PLACE"
+		]
+	},
+	{
+		"Name": "Cutlasses",
+		"Desc": "Add cutlasses to any squad pattern.",
+		"ID": "Cutlasses",
+
+		"Parts": [
+			"Cutlass",
+			"Cutlass",
+			"Cutlass",
+			"Cutlass"
+		]
+	}
+]

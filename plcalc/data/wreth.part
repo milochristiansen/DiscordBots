@@ -1,0 +1,218 @@
+[
+	{
+		"Name": "Windrider Corvette Hull",
+		"Desc": "",
+		"ID": "Windrider Hull",
+
+		"Cost": {
+			"O": 5,
+			"W": 9
+		}
+	},
+	{
+		"Name": "Windrider Corvette Hull (Medium Core)",
+		"Desc": "",
+		"ID": "Windrider M Hull",
+
+		"Cost": {
+			"O": 7,
+			"W": 11
+		}
+	},
+	{
+		"Name": "Dragun Skyskiff",
+		"Desc": "",
+		"ID": "Fire Skiff Hull",
+
+		"Cost": {
+			"O": 4,
+			"W": 8
+		}
+	},
+
+	{
+		"Name": "SUCKERPUNCH Light Aether Cannon",
+		"Desc": "",
+		"ID": "SUCKERPUNCH",
+
+		"Cost": {
+			"C": 1,
+			"O": 2
+		},
+		"Bonus": {
+			"IS": {"O": 1}
+		}
+	},
+	{
+		"Name": "Dragun Cannon",
+		"Desc": "",
+		"ID": "Dragun",
+
+		"Cost": {
+			"O": 3,
+			"W": 2
+		}
+	},
+	{
+		"Name": "Dragun Cannon Turret Mount",
+		"Desc": "",
+		"ID": "Dragun Mount",
+
+		"Cost": {
+			"O": 2,
+			"W": 4
+		}
+	},
+
+	{
+		"Name": "Very Small Itshana Select Lift",
+		"Desc": "",
+		"ID": "VS IS Lift",
+
+		"Cost": {
+			"C": 2,
+			"O": 4
+		},
+		"Bonus": {
+			"IS": {"O": 2}
+		}
+	},
+	{
+		"Name": "Small Itshana Select Lift",
+		"Desc": "",
+		"ID": "S IS Lift",
+
+		"Cost": {
+			"C": 3,
+			"O": 5
+		},
+		"Bonus": {
+			"IS": {"O": 2}
+		}
+	},
+
+	{
+		"Name": "Itshana Select Trim",
+		"Desc": "",
+		"ID": "IS Trim",
+
+		"Cost": {
+			"C": 0.5,
+			"O": 0.5
+		},
+		"Bonus": {
+			"IS": {"O": 0.5}
+		}
+	},
+
+	{
+		"Name": "Very Small Itshana Select Core",
+		"Desc": "",
+		"ID": "VS IS Core",
+
+		"Cost": {
+			"C": 3,
+			"O": 3
+		},
+		"Bonus": {
+			"IS": {"O": 3}
+		}
+	},
+	{
+		"Name": "Small Itshana Select Core",
+		"Desc": "",
+		"ID": "S IS Core",
+
+		"Cost": {
+			"C": 6,
+			"O": 6
+		},
+		"Bonus": {
+			"IS": {"O": 6}
+		}
+	},
+
+	{
+		"Name": "Medium Ikusasa Core",
+		"Desc": "",
+		"ID": "M Core",
+
+		"Cost": {
+			"C": 20
+		}
+	},
+
+	{
+		"Name": "Suppressor Repeating Crossbow",
+		"Desc": "",
+		"ID": "Suppressor",
+
+		"Cost": {
+			"O": 1,
+			"W": 2
+		}
+	},
+	{
+		"Name": "Pincushion Repeating Crossbow",
+		"Desc": "",
+		"ID": "Pincushion",
+
+		"Cost": {
+			"W": 3
+		}
+	},
+	{
+		"Name": "Envenomed Bolts",
+		"Desc": "",
+		"ID": "Venom Bolts",
+
+		"//": "Squad cost!",
+		"Cost": {
+			"W": 2,
+			"S": 1
+		}
+	},
+	{
+		"Name": "Portable Light Aether Cannon Emplacement",
+		"Desc": "",
+		"ID": "PLACE",
+
+		"Cost": {
+			"C": 2,
+			"O": 2,
+			"S": 1
+		}
+	},
+	{
+		"Name": "MOVE Portable Light Aether Cannon Emplacement",
+		"Desc": "",
+		"ID": "MOVE PLACE",
+
+		"Cost": {
+			"C": 2,
+			"O": 3,
+			"S": 1
+		},
+		"Bonus": {
+			"IS": {"O": 1}
+		}
+	},
+	{
+		"Name": "BLOCK",
+		"Desc": "",
+		"ID": "BLOCK",
+
+		"Cost": {
+			"W": 4
+		}
+	},
+	{
+		"Name": "BOX",
+		"Desc": "",
+		"ID": "BOX",
+
+		"Cost": {
+			"W": 3
+		}
+	}
+]

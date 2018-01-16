@@ -1,0 +1,104 @@
+
+[
+	{
+		"Name": "Skyskiff",
+		"Desc": "",
+		"ID": "Skiff Hull",
+
+		"Cost": {
+			"O": 2,
+			"W": 5
+		}
+	},
+	{
+		"Name": "Transport Barge",
+		"Desc": "",
+		"ID": "Transport Hull",
+
+		"Cost": {
+			"O": 2,
+			"W": 7
+		}
+	},
+
+	{
+		"Name": "Very Small Core",
+		"Desc": "",
+		"ID": "VS Core",
+
+		"Cost": {
+			"C": 3
+		}
+	},
+	{
+		"Name": "Small Core",
+		"Desc": "",
+		"ID": "S Core",
+
+		"Cost": {
+			"C": 6
+		}
+	},
+
+	{
+		"Name": "Very Small Itshana Lift",
+		"Desc": "",
+		"ID": "VS Lift",
+
+		"Cost": {
+			"C": 2,
+			"O": 2
+		}
+	},
+	{
+		"Name": "Small Itshana Lift",
+		"Desc": "",
+		"ID": "S Lift",
+
+		"Cost": {
+			"C": 3,
+			"O": 2
+		}
+	},
+
+	{
+		"Name": "Trim",
+		"Desc": "",
+		"ID": "Trim",
+
+		"Cost": {
+			"C": 0.5
+		}
+	},
+
+	{
+		"Name": "Light Aether Cannon",
+		"Desc": "",
+		"ID": "LAC",
+
+		"Cost": {
+			"C": 1,
+			"O": 1
+		}
+	},
+
+	{
+		"Name": "Light Copper Ship Plating",
+		"Desc": "",
+		"ID": "Copper Armor",
+
+		"Cost": {
+			"O": 3
+		}
+	},
+
+	{
+		"Name": "Basic Webbing",
+		"Desc": "",
+		"ID": "Web",
+
+		"Cost": {
+			"S": 2
+		}
+	}
+]

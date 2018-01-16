@@ -1,0 +1,40 @@
+[
+	{
+		"Name": "Skyskiff Pattern A",
+		"Desc": "A Skyskiff fitted with the default parts.",
+		"ID": "Skiff",
+
+		"Parts": [
+			"Skiff Hull",
+
+			"VS Core",
+			"VS Lift",
+			"Trim",
+			"Trim",
+			"Trim",
+			"Trim",
+
+			"Web",
+			"Web",
+
+			"LAC",
+			"LAC"
+		]
+	},
+	{
+		"Name": "Transport Barge",
+		"Desc": "A transport fitted with the default parts.",
+		"ID": "Transport",
+
+		"Parts": [
+			"Transport Hull",
+
+			"S Core",
+			"S Lift",
+			"Trim",
+			"Trim",
+
+			"Web"
+		]
+	}
+]

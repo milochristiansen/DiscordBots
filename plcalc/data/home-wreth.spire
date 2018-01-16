@@ -1,0 +1,46 @@
+[
+	{
+		"Name": "Wreth",
+		"Desc": "",
+		"ID": "Wreth",
+		"Prod": {
+			"C": 10,
+			"O": 8,
+			"W": 10,
+			"S": 5
+		}
+	},
+	{
+		"Name": "Haze-Maze",
+		"Desc": "Deadly Gas Pockets, significant vertical shafts and steep tunnels.",
+		"ID": "HM",
+		"Prod": {
+			"C": 1,
+			"O": 3,
+			"W": 1,
+			"S": 2
+		}
+	},
+	{
+		"Name": "Miner's Folly",
+		"Desc": "Toxic Stone, Massive Caverns, pitch-black.",
+		"ID": "MF",
+		"Prod": {
+			"C": 1,
+			"O": 6,
+			"W": 0,
+			"S": 1
+		}
+	},
+	{
+		"Name": "The Verdant Vista",
+		"Desc": "Mostly earth and soil, Unstable pocket caves.",
+		"ID": "VV",
+		"Prod": {
+			"C": 1,
+			"O": 0,
+			"W": 8,
+			"S": 2
+		}
+	}
+]

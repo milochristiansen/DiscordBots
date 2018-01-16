@@ -1,0 +1,46 @@
+[
+	{
+		"Name": "Three Captains",
+		"Desc": "Kinetoluminescent Ores, Heavily Infested.",
+		"ID": "TC",
+		"Prod": {
+			"C": 1,
+			"O": 6,
+			"W": 2,
+			"S": 6
+		}
+	},
+	{
+		"Name": "Wrackspire",
+		"Desc": "Unstable Aetheric Phenomena, Broken Spire.",
+		"ID": "WS",
+		"Prod": {
+			"C": 3,
+			"O": 4,
+			"W": 4,
+			"S": 2
+		}
+	},
+	{
+		"Name": "Burned Mountain",
+		"Desc": "Inexplicably Molten Core, Hundreds of narrow tunnels and small galleries.",
+		"ID": "BM",
+		"Prod": {
+			"C": 1,
+			"O": 10,
+			"W": 1,
+			"S": 0
+		}
+	},
+	{
+		"Name": "The Unfinished",
+		"Desc": "Unfinished infrastructure, Massive open rooms and halls.",
+		"ID": "TU",
+		"Prod": {
+			"C": 8,
+			"O": 0,
+			"W": 6,
+			"S": 2
+		}
+	}
+]

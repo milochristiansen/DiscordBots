@@ -1,0 +1,9 @@
+[
+	{
+		"Name": "Example",
+		"Desc": "This is a 'Bonus', by listing this in the Bonus section of your parts or cores you can modify the results with a script.",
+		"ID": "EXAMPLE BONUS",
+
+		"Script": "example.lua"
+	}
+]
