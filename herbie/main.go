@@ -36,7 +36,7 @@ import "github.com/bwmarrin/discordgo"
 
 // https://discordapp.com/oauth2/authorize?client_id=402521174384574464&scope=bot&permissions=133120
 var (
-	APIKey  = "NDAyNTIxMTc0Mzg0NTc0NDY0.DT6QIw.tJ3dNCxDHpLcLevYlgwnEqbdbDs"
+	APIKey  string
 	RSSPath = "https://ceruleanscrawling.wordpress.com/feed/"
 )
 

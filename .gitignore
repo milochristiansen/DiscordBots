@@ -19,3 +19,6 @@
 
 # Compiled resource files
 *.syso
+
+# API keys
+key.go

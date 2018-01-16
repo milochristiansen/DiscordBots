@@ -35,7 +35,7 @@ import "github.com/milochristiansen/axis2/sources"
 
 // https://discordapp.com/oauth2/authorize?client_id=402586923765465109&scope=bot&permissions=2048
 var (
-	APIKey = "NDAyNTg2OTIzNzY1NDY1MTA5.DT650g.lo6hhry2MMQ1Xq4_-LaOw-mRh_0"
+	APIKey string
 
 	WrethChan   = "340499300184489986"
 	KasgyreChan = ""
