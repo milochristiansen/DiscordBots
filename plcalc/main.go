@@ -166,6 +166,10 @@ Calculate production line COWS from a raw COWS value.
 
 Note that the COWS numbers may be partly specified, specified in any order, or even left blank. Any missing value is set to 0.
 
+**General Calculator:** `+"`"+`!calc <expression>`+"`"+`
+
+Run the given Lua *expression*, and print the result. Basic math should work fine, but most common modules are not loaded and statements are not allowed, so it is pretty limited.
+
 **Reload Data Files:** `+"`"+`!reload`+"`"+`
 
 Reloads the data files and resets **all** settings to their defaults.
@@ -289,9 +293,19 @@ Reloads the data files and resets **all** settings to their defaults.
 		line := strings.TrimSpace(strings.TrimPrefix(m.Content, "!tweak"))
 		ok, prod := parseCOWS(line)
 		if !ok {
-			fmt.Println("Invalid COWS specifier.")
+			s.ChannelMessageSend(m.ChannelID, "Invalid COWS specifier.")
+			return
 		}
 		getSide(m.ChannelID).Spires["@"].Prod = prod
+		return
+	case strings.HasPrefix(m.Content, "!calc"):
+		line := strings.TrimSpace(strings.TrimPrefix(m.Content, "!calc"))
+		result, ok := runExpr(line)
+		if !ok {
+			s.ChannelMessageSend(m.ChannelID, "Invalid expression.")
+			return
+		}
+		s.ChannelMessageSend(m.ChannelID, result)
 		return
 	default:
 		line := strings.TrimSpace(strings.TrimPrefix(m.Content, "!"))

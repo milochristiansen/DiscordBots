@@ -24,7 +24,6 @@ package main
 
 import "github.com/milochristiansen/lua"
 import "github.com/milochristiansen/lua/lmodbase"
-import "github.com/milochristiansen/lua/lmodpackage"
 import "github.com/milochristiansen/lua/lmodstring"
 import "github.com/milochristiansen/lua/lmodtable"
 import "github.com/milochristiansen/lua/lmodmath"
@@ -455,14 +454,28 @@ func init() {
 	// Load standard modules
 	l.Push(lmodbase.Open)
 	l.Call(0, 0)
-	l.Push(lmodpackage.Open)
-	l.Call(0, 0)
 	l.Push(lmodstring.Open)
 	l.Call(0, 0)
 	l.Push(lmodtable.Open)
 	l.Call(0, 0)
 	l.Push(lmodmath.Open)
 	l.Call(0, 0)
+}
+
+func runExpr(expr string) (string, bool) {
+	err := l.LoadText(strings.NewReader("return "+expr), "", 0)
+	if err != nil {
+		return "", false
+	}
+
+	err = l.PCall(0, 1)
+	if err != nil {
+		return "", false
+	}
+
+	rtn := l.ToString(-1)
+	l.Pop(1)
+	return rtn, true
 }
 
 func runBonus(cows, bonus *price, script string) {
@@ -538,7 +551,7 @@ func runBonus(cows, bonus *price, script string) {
 	if ok {
 		cows.S = f
 	}
-	l.Pop(1)
+	l.Pop(2)
 }
 
 func GetExt(name string) string {
