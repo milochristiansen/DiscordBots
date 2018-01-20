@@ -65,20 +65,17 @@ func main() {
 
 	fp := gofeed.NewParser()
 	for {
-		// Discord channel IDs are saved in a totally brain-dead csv file. This way if the bot crashes nothing is lost.
-		idlist, err := ioutil.ReadFile("herbie.ids")
+		channels, err := getChannels()
 		if err != nil {
+			fmt.Println("DB Error:", err)
+			time.Sleep(30 * time.Second)
 			continue
 		}
-		ids := strings.Split(string(idlist), ",")
 
-		check := time.Now()
-
-		// Same deal with the last check time.
-		last, err := ioutil.ReadFile("herbie.last")
+		stories, err := getStories()
 		if err != nil {
-			fmt.Println("Last time parse error! Reinitializing system.\nError:", err)
-			_ = ioutil.WriteFile("herbie.last", []byte(check.Format(time.RFC3339)), 0666)
+			fmt.Println("DB Error:", err)
+			time.Sleep(30 * time.Second)
 			continue
 		}
 
@@ -89,21 +86,16 @@ func main() {
 			continue
 		}
 
-		lastT, err := time.Parse(time.RFC3339, strings.TrimSpace(string(last)))
-		if err != nil {
-			fmt.Println("Last time parse error! Reinitializing system.\nError:", err)
-			_ = ioutil.WriteFile("herbie.last", []byte(check.Format(time.RFC3339)), 0666)
-			continue
-		}
-
 		for _, item := range feed.Items {
-			if item.PublishedParsed.After(lastT) {
+			if !stories[item.Link] {
 				fmt.Println("New Post: " + item.Link)
-				for _, id := range ids {
-					id = strings.TrimSpace(id)
-					if id == "" {
-						continue
-					}
+				if item.PublishedParsed != nil {
+					addStory(item.Title, item.Link, item.PublishedParsed.Unix())
+				} else {
+					addStory(item.Title, item.Link, 0)
+				}
+
+				for _, id := range channels {
 					_, err := dg.ChannelMessageSend(id, "@everyone New Post: "+item.Link)
 					if err != nil {
 						fmt.Println("Error sending message to:", id, err)
@@ -112,7 +104,6 @@ func main() {
 			}
 		}
 
-		_ = ioutil.WriteFile("herbie.last", []byte(check.Format(time.RFC3339)), 0666)
 		time.Sleep(1 * time.Minute)
 	}
 	//dg.Close()
@@ -155,20 +146,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			return
 		}
 
-		idlist, _ := ioutil.ReadFile("herbie.ids")
-		ids := strings.Split(string(idlist), ",")
-		ids = append(ids, m.ChannelID)
-
-		nids := []string{}
-		for _, id := range ids {
-			id = strings.TrimSpace(id)
-			if id == "" {
-				continue
-			}
-			nids = append(nids, id)
+		err := addChannel(m.ChannelID)
+		if err != nil {
+			s.ChannelMessageSend(m.ChannelID, "Herbie looks confused. (check server logs)")
+			fmt.Println("Channel add error:", err)
+			return
 		}
-
-		_ = ioutil.WriteFile("herbie.ids", []byte(strings.Join(nids, ",")), 0666)
 		s.ChannelMessageSend(m.ChannelID, "Herbie seems to perk up a bit.")
 	case "Herbie, stop posting here.":
 		if !isAdmin {
@@ -176,19 +159,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			return
 		}
 
-		idlist, _ := ioutil.ReadFile("herbie.ids")
-		ids := strings.Split(string(idlist), ",")
-
-		nids := []string{}
-		for _, id := range ids {
-			id = strings.TrimSpace(id)
-			if id == "" || id == m.ChannelID {
-				continue
-			}
-			nids = append(nids, id)
+		err := removeChannel(m.ChannelID)
+		if err != nil {
+			s.ChannelMessageSend(m.ChannelID, "Herbie looks confused. (check server logs)")
+			fmt.Println("Channel remove error:", err)
+			return
 		}
-
-		_ = ioutil.WriteFile("herbie.ids", []byte(strings.Join(nids, ",")), 0666)
 		s.ChannelMessageSend(m.ChannelID, "Herbie looks bored.")
 	}
 }
