@@ -79,6 +79,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		fs.Mount("data", sources.NewOSDir("./data"), true)
 		loadConfig(fs)
 		s.ChannelMessageSend(m.ChannelID, "(Re)loaded data files.")
+	case strings.HasPrefix(m.Content, "!debug"):
+		side := getSide(m.ChannelID)
+		side.Debug = !side.Debug
+		s.ChannelMessageSend(m.ChannelID, "Debug mode toggled.")
 	case strings.HasPrefix(m.Content, "!help"):
 		line := strings.TrimSpace(strings.TrimPrefix(m.Content, "!help"))
 		if line == "" {
@@ -86,20 +90,20 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			return
 		}
 
-		spires := []string{}
-		for id := range getSide(m.ChannelID).Spires {
-			spires = append(spires, id)
-		}
-		patterns := []string{}
-		for id := range getSide(m.ChannelID).Cores {
-			patterns = append(patterns, id)
-		}
-		parts := []string{}
-		for id := range getSide(m.ChannelID).Parts {
-			parts = append(parts, id)
-		}
-
 		if line == "ids" {
+			spires := []string{}
+			for id := range getSide(m.ChannelID).Spires {
+				spires = append(spires, id)
+			}
+			patterns := []string{}
+			for id := range getSide(m.ChannelID).Cores {
+				patterns = append(patterns, id)
+			}
+			parts := []string{}
+			for id := range getSide(m.ChannelID).Parts {
+				parts = append(parts, id)
+			}
+
 			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf(HelpIDs,
 				strings.Join(spires, ", "), getSide(m.ChannelID).Name, strings.Join(patterns, ", "), strings.Join(parts, ", ")))
 			return
@@ -199,14 +203,15 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				}
 				bonuses[id].add(bonus.copy().mul(mult))
 			}
-			//partDump := ""
+			partDump := ""
 			for _, id := range core.Parts {
 				part, ok := getSide(m.ChannelID).Parts[id]
 				if !ok {
 					s.ChannelMessageSend(m.ChannelID, "Invalid part ID.")
 					return
 				}
-				//partDump += part.ID + ": " + part.Cost.String() + "\n"
+
+				partDump += part.ID + ": " + part.Cost.String() + "\n"
 				cost.add(part.Cost.copy().mul(mult))
 				for id, bonus := range part.Bonus {
 					_, ok := bonuses[id]
@@ -216,7 +221,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 					bonuses[id].add(bonus.copy().mul(mult))
 				}
 			}
-			//s.ChannelMessageSend(m.ChannelID, partDump)
+			if getSide(m.ChannelID).Debug {
+				s.ChannelMessageSend(m.ChannelID, partDump)
+			}
 		}
 
 		out := "-\nRaw Cost:\n\t`" + cost.String() + "`"

@@ -59,6 +59,7 @@ type sideDef struct {
 	Bonuses   map[string]*prodBonus
 	Parts     map[string]*prodPart
 	Cores     map[string]*prodCore
+	Debug     bool
 }
 
 const (
