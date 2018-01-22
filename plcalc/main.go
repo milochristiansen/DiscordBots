@@ -183,26 +183,19 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		cost := &price{}
 		bonuses := map[string]*price{}
 		for _, pattern := range patterns {
-			parts := parsePattern(pattern)
-			if parts == nil {
-				s.ChannelMessageSend(m.ChannelID, "Error parsing pattern.")
+			part, count := parsePattern(pattern, m.ChannelID)
+			if part == nil {
+				// Error messages are printed in the parsing function.
 				return
 			}
 
 			partDump := "-\n"
-			for _, id := range parts {
-				part, ok := getSide(m.ChannelID).Parts[id]
-				if !ok {
-					s.ChannelMessageSend(m.ChannelID, "Invalid part ID.")
-					return
-				}
-				ok, dump := part.calc(cost, bonuses, m.ChannelID, "> ")
-				if !ok {
-					s.ChannelMessageSend(m.ChannelID, "Invalid part ID.")
-					return
-				}
-				partDump += dump
+			ok, dump := part.calc(cost, count, bonuses, m.ChannelID, "> ")
+			if !ok {
+				// Error messages are printed in the calc function.
+				return
 			}
+			partDump += dump
 
 			if getSide(m.ChannelID).Debug {
 				s.ChannelMessageSend(m.ChannelID, partDump)
@@ -214,7 +207,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		for id, bonus := range bonuses {
 			bonusDef, ok := getSide(m.ChannelID).Bonuses[id]
 			if !ok {
-				s.ChannelMessageSend(m.ChannelID, "Invalid bonus ID.")
+				s.ChannelMessageSend(m.ChannelID, "Invalid bonus ID: `"+id+"`")
 				return
 			}
 
@@ -224,7 +217,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		ok, result := calcCOWS(cost, m.ChannelID)
 		if !ok {
-			s.ChannelMessageSend(m.ChannelID, "Invalid spire list.")
+			s.ChannelMessageSend(m.ChannelID, "Invalid spire list (should be impossible).")
 			return
 		}
 
@@ -257,7 +250,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if ok {
 			ok, result := calcCOWS(cows, m.ChannelID)
 			if !ok {
-				s.ChannelMessageSend(m.ChannelID, "Invalid spire list.")
+				s.ChannelMessageSend(m.ChannelID, "Invalid spire list (should be impossible).")
 				return
 			}
 

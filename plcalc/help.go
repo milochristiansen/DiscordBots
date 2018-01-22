@@ -67,12 +67,11 @@ Some parts are actually collections of other parts. It can be useful to remove s
 |||
 !pattern Test-A:2;Part1;Part2:3
 |||
+Note that the parts listed after the first part are removed *once for each copy of the first part*. If you say |Test-A:2;Part1|, |Part1| will be removed twice, once from each copy of |Test-A|.
 
 **Tweak Production:** |!tweak 0c,0o,0w,0s|
-Set a modifier for spire production. For this to take effect the |@| spire must be in the spire list.
+Set a modifier for spire production. For this to take effect the |@| spire must be in the spire list. 
 
-Note that the COWS numbers may be partly specified, specified in any order, or even left blank. Any missing value is set to 0.
-	   
 **Calculate from raw COWS:** |! 0c,0o,0w,0s|
 Calculate production line COWS from a raw COWS value.
 

@@ -390,8 +390,8 @@ type prodPart struct {
 	Parts []string
 }
 
-func (part *prodPart) calc(cost *price, bonus map[string]*price, side, lvl string) (bool, string) {
-	cost.add(part.Cost)
+func (part *prodPart) calc(cost *price, count int, bonus map[string]*price, side, lvl string) (bool, string) {
+	cost.add(part.Cost.copy().mul(&price{C: float64(count), O: float64(count), W: float64(count), S: float64(count)}))
 	for id, bdat := range part.Bonus {
 		_, ok := bonus[id]
 		if !ok {
@@ -406,9 +406,10 @@ func (part *prodPart) calc(cost *price, bonus map[string]*price, side, lvl strin
 	for _, id := range part.Parts {
 		cpart, ok := sidedef.Parts[id]
 		if !ok {
+			s.ChannelMessageSend(side, "Invalid part ID: `"+id+"`")
 			return false, ""
 		}
-		ok, dump := cpart.calc(cost, bonus, side, lvl+"> ")
+		ok, dump := cpart.calc(cost, count, bonus, side, lvl+"> ")
 		if !ok {
 			return false, ""
 		}
@@ -454,10 +455,12 @@ func parseCOWS(cows string) (bool, *price) {
 	return true, rtn
 }
 
-func parsePattern(pattern string) []string {
+func parsePattern(pattern, side string) (*prodPart, int) {
 	ids := strings.Split(pattern, ";")
 
 	partList := map[string]int{}
+	firstPart := ""
+	firstCount := 0
 	for i := 0; i < len(ids); i++ {
 		parts := strings.SplitN(ids[i], ":", 2)
 		pcount := 1
@@ -465,7 +468,8 @@ func parsePattern(pattern string) []string {
 		if len(parts) == 2 {
 			pcount, err = strconv.Atoi(parts[1])
 			if err != nil {
-				return nil
+				s.ChannelMessageSend(side, "Count is not a valid integer: `"+parts[1]+"`")
+				return nil, 0
 			}
 		}
 
@@ -473,16 +477,44 @@ func parsePattern(pattern string) []string {
 		if id == "" {
 			continue
 		}
-		partList[id] -= pcount
+
+		_, ok := getSide(side).Parts[id]
+		if !ok {
+			s.ChannelMessageSend(side, "Part specified for removal does not exist: `"+id+"`")
+			return nil, 0
+		}
+		if i == 0 {
+			firstPart = id
+			firstCount = pcount
+			continue
+		}
+		partList[id] += pcount
 	}
 
-	ret := []string{}
-	for part, count := range partList {
-		for i := 0; i < count; i++ {
-			ret = append(ret, part)
+	base, ok := getSide(side).Parts[firstPart]
+	if !ok {
+		s.ChannelMessageSend(side, "First part ID does not exist: `"+firstPart+"`")
+		return nil, 0
+	}
+	ret := &prodPart{
+		Cost:  base.Cost,
+		Bonus: base.Bonus,
+	}
+
+	existingParts := map[string]int{}
+	for _, part := range base.Parts {
+		existingParts[part]++
+	}
+	for part := range existingParts {
+		existingParts[part] -= partList[part]
+	}
+	for part := range existingParts {
+		for i := 0; i < existingParts[part]; i++ {
+			ret.Parts = append(ret.Parts, part)
 		}
 	}
-	return ret
+
+	return ret, firstCount
 }
 
 var l = lua.NewState()
