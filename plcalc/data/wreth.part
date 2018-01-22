@@ -44,6 +44,29 @@
 		}
 	},
 	{
+		"Name": "EMERALD Aether Cannon",
+		"Desc": "",
+		"ID": "EMERALD",
+
+		"Cost": {
+			"C": 1,
+			"O": 4
+		}
+	},
+	{
+		"Name": "EMERALD Itshanna Aether Cannon",
+		"Desc": "",
+		"ID": "IS EMERALD",
+
+		"Cost": {
+			"C": 1,
+			"O": 5
+		},
+		"Bonus": {
+			"IS": {"O": 1}
+		}
+	},
+	{
 		"Name": "Dragun Cannon",
 		"Desc": "",
 		"ID": "Dragun",
@@ -139,6 +162,19 @@
 
 		"Cost": {
 			"C": 20
+		}
+	},
+	{
+		"Name": "Medium Ikusasa Select Core",
+		"Desc": "",
+		"ID": "M IS Core",
+
+		"Cost": {
+			"C": 20,
+			"O": 20
+		},
+		"Bonus": {
+			"IS": {"O": 20}
 		}
 	},
 

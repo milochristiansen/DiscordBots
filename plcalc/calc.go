@@ -70,14 +70,14 @@ var Sides = map[string]*sideDef{
 	"DEFAULT": &sideDef{
 		Name: "Default side",
 		SpireList: map[string]bool{
-			"@":    true,
-			"Home": true,
+			"Tweak": true,
+			"Home":  true,
 		},
 		Spires: map[string]*spire{
-			"@": {
+			"Tweak": {
 				Name: "Income Modifier",
 				Desc: "A fake 'spire' used to preview income changes.",
-				ID:   "@",
+				ID:   "Tweak",
 
 				Prod: &price{},
 			},
@@ -139,14 +139,14 @@ func loadConfig(fs *axis2.FileSystem) {
 		WrethSide: &sideDef{
 			Name: "",
 			SpireList: map[string]bool{
-				"@":    true,
-				"Home": true,
+				"Tweak": true,
+				"Home":  true,
 			},
 			Spires: map[string]*spire{
-				"@": {
+				"Tweak": {
 					Name: "Income Modifier",
 					Desc: "A fake 'spire' used to preview income changes.",
-					ID:   "@",
+					ID:   "Tweak",
 
 					Prod: &price{},
 				},
@@ -165,14 +165,14 @@ func loadConfig(fs *axis2.FileSystem) {
 		KasgyreSide: &sideDef{
 			Name: "Kasgyre",
 			SpireList: map[string]bool{
-				"@":    true,
-				"Home": true,
+				"Tweak": true,
+				"Home":  true,
 			},
 			Spires: map[string]*spire{
-				"@": {
+				"Tweak": {
 					Name: "Income Modifier",
 					Desc: "A fake 'spire' used to preview income changes.",
-					ID:   "@",
+					ID:   "Tweak",
 
 					Prod: &price{},
 				},
@@ -191,14 +191,14 @@ func loadConfig(fs *axis2.FileSystem) {
 		"DEFAULT": &sideDef{
 			Name: "Default side",
 			SpireList: map[string]bool{
-				"@":    true,
-				"Home": true,
+				"Tweak": true,
+				"Home":  true,
 			},
 			Spires: map[string]*spire{
-				"@": {
+				"Tweak": {
 					Name: "Income Modifier",
 					Desc: "A fake 'spire' used to preview income changes.",
-					ID:   "@",
+					ID:   "Tweak",
 
 					Prod: &price{},
 				},
@@ -446,6 +446,71 @@ func parseCOWS(cows string) (bool, *price) {
 	}
 
 	return true, rtn
+}
+
+func parsePattern(pattern, side string) (*prodCore, float64) {
+	sidedat := getSide(side)
+
+	ids := strings.Split(pattern, ";")
+
+	parts := strings.SplitN(ids[0], ":", 2)
+	count := 1.0
+	var err error
+	if len(parts) == 2 {
+		count, err = strconv.ParseFloat(parts[1], 64)
+		if err != nil {
+			return nil, 0
+		}
+	}
+
+	core, ok := sidedat.Cores[strings.TrimSpace(parts[0])]
+	if !ok {
+		return nil, 0
+	}
+
+	ret := &prodCore{
+		Cost:  core.Cost,
+		Bonus: core.Bonus,
+	}
+	copy(ret.Parts, core.Parts)
+
+	partList := map[string]int{}
+	for _, part := range core.Parts {
+		partList[part]++
+	}
+
+	for i := 1; i < len(ids); i++ {
+		parts := strings.SplitN(ids[i], ":", 2)
+		pcount := 1
+		var err error
+		if len(parts) == 2 {
+			pcount, err = strconv.Atoi(parts[1])
+			if err != nil {
+				return nil, 0
+			}
+		}
+
+		id := strings.TrimSpace(parts[0])
+		if id == "" {
+			continue
+		}
+		switch id[0] {
+		case '-':
+			partList[id[1:]] -= pcount
+		case '+':
+			partList[id[1:]] += pcount
+		default:
+			partList[id] += pcount
+		}
+	}
+
+	for part, count := range partList {
+		for i := 0; i < count; i++ {
+			ret.Parts = append(ret.Parts, part)
+		}
+	}
+
+	return ret, count
 }
 
 var l = lua.NewState()

@@ -24,7 +24,6 @@ misrepresented as being the original software.
 package main
 
 import "strings"
-import "strconv"
 import "time"
 import "fmt"
 
@@ -95,6 +94,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		for id := range getSide(m.ChannelID).Cores {
 			patterns = append(patterns, id)
 		}
+		parts := []string{}
+		for id := range getSide(m.ChannelID).Parts {
+			parts = append(parts, id)
+		}
 
 		if line == "ids" {
 			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf(`
@@ -107,7 +110,11 @@ The following patterns are currently loaded for %v:
 `+"```"+`
 %v
 `+"```"+`
-`, strings.Join(spires, ", "), getSide(m.ChannelID).Name, strings.Join(patterns, ", ")))
+The following parts are available:
+`+"```"+`
+%v
+`+"```"+`
+`, strings.Join(spires, ", "), getSide(m.ChannelID).Name, strings.Join(patterns, ", "), strings.Join(parts, ", ")))
 			return
 		}
 
@@ -115,7 +122,7 @@ The following patterns are currently loaded for %v:
 -
 **Set Spire:** `+"`"+`!spires <list of comma separated spire IDs>`+"`"+`
 
-Set the spires used to calculate COWS. The special symbol `+"`"+`@`+"`"+` is the "spire" used by the Tweak Production (`+"`"+`!tweak`+"`"+`) command, and `+"`"+`Home`+"`"+` is all the home spires.
+Set the spires used to calculate COWS. The special ID `+"`"+`Tweak`+"`"+` is the "spire" used by the Tweak Production (`+"`"+`!tweak`+"`"+`) command, and `+"`"+`Home`+"`"+` is all the home spires.
 
 In addition to specifying the entire list of spires you want, you can activate or deactivate spires with the following syntax:
 
@@ -129,7 +136,7 @@ If no spires are specified this command will print the current list.
 Default spire list:
 
 `+"```"+`
-@, Home
+Tweak, Home
 `+"```"+`
 
 Valid spire IDs:
@@ -145,10 +152,22 @@ Calculate the COWS for a named pattern. This pattern needs to be defined in the 
 If you wish, you can specify a count for a pattern, or specify multiple patterns to calculate together. For example, calculate the cost of one pattern "Test-A" and two pattern "Test-B":
 
 `+"```"+`
-# Test-A, Test-B:2
+!pattern Test-A, Test-B:2
+`+"```"+`
+
+To support tinkering, you can construct temporary patterns on the fly or modify existing patterns by adding parts to an existing pattern.
+
+`+"```"+`
+!pattern Test-A:2;+Part1;-Part2:3
 `+"```"+`
 
 The following patterns are currently loaded for %v:
+
+`+"```"+`
+%v
+`+"```"+`
+
+The following parts may be used:
 
 `+"```"+`
 %v
@@ -173,7 +192,7 @@ Run the given Lua *expression*, and print the result. Basic math should work fin
 **Reload Data Files:** `+"`"+`!reload`+"`"+`
 
 Reloads the data files and resets **all** settings to their defaults.
-`, strings.Join(spires, ", "), getSide(m.ChannelID).Name, strings.Join(patterns, ", ")))
+`, strings.Join(spires, ", "), getSide(m.ChannelID).Name, strings.Join(patterns, ", "), strings.Join(parts, ", ")))
 		return
 	case strings.HasPrefix(m.Content, "!spires"):
 		line := strings.TrimSpace(strings.TrimPrefix(m.Content, "!spires"))
@@ -188,7 +207,19 @@ Reloads the data files and resets **all** settings to their defaults.
 				}
 				getSide(m.ChannelID).SpireList[spire] = state
 			}
-			s.ChannelMessageSend(m.ChannelID, "Spires set.")
+
+			spires := []string{}
+			for spire, ok := range getSide(m.ChannelID).SpireList {
+				if !ok {
+					continue
+				}
+
+				if spire == "Tweak" {
+					spire = spire + "(" + getSide(m.ChannelID).Spires["Tweak"].Prod.String() + ")"
+				}
+				spires = append(spires, spire)
+			}
+			s.ChannelMessageSend(m.ChannelID, "Spires set: "+strings.Join(spires, ", "))
 			return
 		}
 
@@ -199,6 +230,9 @@ Reloads the data files and resets **all** settings to their defaults.
 					continue
 				}
 
+				if spire == "Tweak" {
+					spire = spire + "(" + getSide(m.ChannelID).Spires["Tweak"].Prod.String() + ")"
+				}
 				spires = append(spires, spire)
 			}
 			s.ChannelMessageSend(m.ChannelID, strings.Join(spires, ", "))
@@ -215,7 +249,19 @@ Reloads the data files and resets **all** settings to their defaults.
 			}
 			getSide(m.ChannelID).SpireList[spire] = true
 		}
-		s.ChannelMessageSend(m.ChannelID, "Spires set.")
+
+		spires := []string{}
+		for spire, ok := range getSide(m.ChannelID).SpireList {
+			if !ok {
+				continue
+			}
+
+			if spire == "Tweak" {
+				spire = spire + "(" + getSide(m.ChannelID).Spires["Tweak"].Prod.String() + ")"
+			}
+			spires = append(spires, spire)
+		}
+		s.ChannelMessageSend(m.ChannelID, "Spires set: "+strings.Join(spires, ", "))
 		return
 	case strings.HasPrefix(m.Content, "!pattern"):
 		line := strings.TrimSpace(strings.TrimPrefix(m.Content, "!pattern"))
@@ -224,23 +270,13 @@ Reloads the data files and resets **all** settings to their defaults.
 		cost := &price{}
 		bonuses := map[string]*price{}
 		for _, pattern := range patterns {
-			parts := strings.SplitN(pattern, ":", 2)
-			count := 1.0
-			var err error
-			if len(parts) == 2 {
-				count, err = strconv.ParseFloat(parts[1], 64)
-				if err != nil {
-					s.ChannelMessageSend(m.ChannelID, "Invalid count.")
-					return
-				}
-			}
-			mult := &price{C: count, O: count, W: count, S: count}
-
-			core, ok := getSide(m.ChannelID).Cores[strings.TrimSpace(parts[0])]
-			if !ok {
-				s.ChannelMessageSend(m.ChannelID, "Invalid pattern.")
+			core, count := parsePattern(pattern, m.ChannelID)
+			if core == nil {
+				s.ChannelMessageSend(m.ChannelID, "Error parsing pattern.")
 				return
 			}
+
+			mult := &price{C: count, O: count, W: count, S: count}
 
 			cost.add(core.Cost.copy().mul(mult))
 			for id, bonus := range core.Bonus {
@@ -296,7 +332,8 @@ Reloads the data files and resets **all** settings to their defaults.
 			s.ChannelMessageSend(m.ChannelID, "Invalid COWS specifier.")
 			return
 		}
-		getSide(m.ChannelID).Spires["@"].Prod = prod
+		getSide(m.ChannelID).Spires["Tweak"].Prod = prod
+		s.ChannelMessageSend(m.ChannelID, "Tweak set: "+prod.String())
 		return
 	case strings.HasPrefix(m.Content, "!calc"):
 		line := strings.TrimSpace(strings.TrimPrefix(m.Content, "!calc"))
