@@ -60,26 +60,5 @@
 
 			"Venom Bolts"
 		]
-	},
-	{
-		"Name": "MOVE PLACE",
-		"Desc": "",
-		"ID": "MOVE PLACE",
-
-		"Parts": [
-			"MOVE PLACE"
-		]
-	},
-	{
-		"Name": "Cutlasses",
-		"Desc": "Add cutlasses to any squad pattern.",
-		"ID": "Cutlasses",
-
-		"Parts": [
-			"Cutlass",
-			"Cutlass",
-			"Cutlass",
-			"Cutlass"
-		]
 	}
 ]

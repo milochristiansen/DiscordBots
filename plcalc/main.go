@@ -95,17 +95,13 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			for id := range getSide(m.ChannelID).Spires {
 				spires = append(spires, id)
 			}
-			patterns := []string{}
-			for id := range getSide(m.ChannelID).Cores {
-				patterns = append(patterns, id)
-			}
 			parts := []string{}
 			for id := range getSide(m.ChannelID).Parts {
 				parts = append(parts, id)
 			}
 
 			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf(HelpIDs,
-				strings.Join(spires, ", "), getSide(m.ChannelID).Name, strings.Join(patterns, ", "), strings.Join(parts, ", ")))
+				strings.Join(spires, ", "), getSide(m.ChannelID).Name, strings.Join(parts, ", ")))
 			return
 		}
 
@@ -187,40 +183,27 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		cost := &price{}
 		bonuses := map[string]*price{}
 		for _, pattern := range patterns {
-			core, count := parsePattern(pattern, m.ChannelID)
-			if core == nil {
+			parts := parsePattern(pattern)
+			if parts == nil {
 				s.ChannelMessageSend(m.ChannelID, "Error parsing pattern.")
 				return
 			}
 
-			mult := &price{C: count, O: count, W: count, S: count}
-
-			cost.add(core.Cost.copy().mul(mult))
-			for id, bonus := range core.Bonus {
-				_, ok := bonuses[id]
-				if !ok {
-					bonuses[id] = &price{}
-				}
-				bonuses[id].add(bonus.copy().mul(mult))
-			}
-			partDump := ""
-			for _, id := range core.Parts {
+			partDump := "-\n"
+			for _, id := range parts {
 				part, ok := getSide(m.ChannelID).Parts[id]
 				if !ok {
 					s.ChannelMessageSend(m.ChannelID, "Invalid part ID.")
 					return
 				}
-
-				partDump += part.ID + ": " + part.Cost.String() + "\n"
-				cost.add(part.Cost.copy().mul(mult))
-				for id, bonus := range part.Bonus {
-					_, ok := bonuses[id]
-					if !ok {
-						bonuses[id] = &price{}
-					}
-					bonuses[id].add(bonus.copy().mul(mult))
+				ok, dump := part.calc(cost, bonuses, m.ChannelID, "> ")
+				if !ok {
+					s.ChannelMessageSend(m.ChannelID, "Invalid part ID.")
+					return
 				}
+				partDump += dump
 			}
+
 			if getSide(m.ChannelID).Debug {
 				s.ChannelMessageSend(m.ChannelID, partDump)
 			}

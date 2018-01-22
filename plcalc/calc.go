@@ -58,7 +58,6 @@ type sideDef struct {
 	Spires    map[string]*spire
 	Bonuses   map[string]*prodBonus
 	Parts     map[string]*prodPart
-	Cores     map[string]*prodCore
 	Debug     bool
 }
 
@@ -92,7 +91,6 @@ var Sides = map[string]*sideDef{
 		},
 		Bonuses: map[string]*prodBonus{},
 		Parts:   map[string]*prodPart{},
-		Cores:   map[string]*prodCore{},
 	},
 }
 
@@ -161,7 +159,6 @@ func loadConfig(fs *axis2.FileSystem) {
 			},
 			Bonuses: map[string]*prodBonus{},
 			Parts:   map[string]*prodPart{},
-			Cores:   map[string]*prodCore{},
 		},
 		KasgyreSide: &sideDef{
 			Name: "Kasgyre",
@@ -187,7 +184,6 @@ func loadConfig(fs *axis2.FileSystem) {
 			},
 			Bonuses: map[string]*prodBonus{},
 			Parts:   map[string]*prodPart{},
-			Cores:   map[string]*prodCore{},
 		},
 		"DEFAULT": &sideDef{
 			Name: "Default side",
@@ -213,7 +209,6 @@ func loadConfig(fs *axis2.FileSystem) {
 			},
 			Bonuses: map[string]*prodBonus{},
 			Parts:   map[string]*prodPart{},
-			Cores:   map[string]*prodCore{},
 		},
 	}
 
@@ -284,17 +279,6 @@ func loadConfigFile(fs *axis2.FileSystem, filepath string) {
 				side.Parts[v.ID] = v
 			}
 		})
-	case ".core":
-		vs := []*prodCore{}
-		err := json.NewDecoder(rdr).Decode(&vs)
-		if err != nil {
-			panic(err)
-		}
-		loadToSides(filepath, func(side *sideDef) {
-			for _, v := range vs {
-				side.Cores[v.ID] = v
-			}
-		})
 	default:
 		// Error
 	}
@@ -305,6 +289,9 @@ type price struct {
 }
 
 func (p *price) String() string {
+	if p == nil {
+		return "0.00c + 0.00o + 0.00w + 0.00s = 0.00"
+	}
 	return fmt.Sprintf("%.2fc + %.2fo + %.2fw + %.2fs = %.2f", Round(p.C, 0.01), Round(p.O, 0.01), Round(p.W, 0.01), Round(p.S, 0.01), Round(p.total(), 0.01))
 }
 
@@ -399,17 +386,35 @@ type prodPart struct {
 
 	Cost  *price
 	Bonus map[string]*price
-}
-
-type prodCore struct {
-	Name string
-	Desc string
-	ID   string
-
-	Cost  *price
-	Bonus map[string]*price
 
 	Parts []string
+}
+
+func (part *prodPart) calc(cost *price, bonus map[string]*price, side, lvl string) (bool, string) {
+	cost.add(part.Cost)
+	for id, bdat := range part.Bonus {
+		_, ok := bonus[id]
+		if !ok {
+			bonus[id] = &price{}
+		}
+		bonus[id].add(bdat)
+	}
+
+	sidedef := getSide(side)
+
+	partDump := lvl + part.ID + ": " + part.Cost.String() + "\n"
+	for _, id := range part.Parts {
+		cpart, ok := sidedef.Parts[id]
+		if !ok {
+			return false, ""
+		}
+		ok, dump := cpart.calc(cost, bonus, side, lvl+"> ")
+		if !ok {
+			return false, ""
+		}
+		partDump += dump
+	}
+	return true, partDump
 }
 
 func parseCOWS(cows string) (bool, *price) {
@@ -449,45 +454,18 @@ func parseCOWS(cows string) (bool, *price) {
 	return true, rtn
 }
 
-func parsePattern(pattern, side string) (*prodCore, float64) {
-	sidedat := getSide(side)
-
+func parsePattern(pattern string) []string {
 	ids := strings.Split(pattern, ";")
 
-	parts := strings.SplitN(ids[0], ":", 2)
-	count := 1.0
-	var err error
-	if len(parts) == 2 {
-		count, err = strconv.ParseFloat(parts[1], 64)
-		if err != nil {
-			return nil, 0
-		}
-	}
-
-	core, ok := sidedat.Cores[strings.TrimSpace(parts[0])]
-	if !ok {
-		return nil, 0
-	}
-
-	ret := &prodCore{
-		Cost:  core.Cost,
-		Bonus: core.Bonus,
-	}
-	copy(ret.Parts, core.Parts)
-
 	partList := map[string]int{}
-	for _, part := range core.Parts {
-		partList[part]++
-	}
-
-	for i := 1; i < len(ids); i++ {
+	for i := 0; i < len(ids); i++ {
 		parts := strings.SplitN(ids[i], ":", 2)
 		pcount := 1
 		var err error
 		if len(parts) == 2 {
 			pcount, err = strconv.Atoi(parts[1])
 			if err != nil {
-				return nil, 0
+				return nil
 			}
 		}
 
@@ -505,13 +483,13 @@ func parsePattern(pattern, side string) (*prodCore, float64) {
 		}
 	}
 
+	ret := []string{}
 	for part, count := range partList {
 		for i := 0; i < count; i++ {
-			ret.Parts = append(ret.Parts, part)
+			ret = append(ret, part)
 		}
 	}
-
-	return ret, count
+	return ret
 }
 
 var l = lua.NewState()
