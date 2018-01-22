@@ -41,7 +41,7 @@
 	},
 
 	{
-		"Name": "Very Small Itshana Lift",
+		"Name": "Very Small Lift",
 		"Desc": "",
 		"ID": "VS Lift",
 
@@ -51,7 +51,7 @@
 		}
 	},
 	{
-		"Name": "Small Itshana Lift",
+		"Name": "Small Lift",
 		"Desc": "",
 		"ID": "S Lift",
 
