@@ -82,7 +82,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	case strings.HasPrefix(m.Content, "!help"):
 		line := strings.TrimSpace(strings.TrimPrefix(m.Content, "!help"))
 		if line == "" {
-			s.ChannelMessageSend(m.ChannelID, "-\nTry `!spires`, `!pattern <design ID>`, `!tweak 0c,0o,0w,0s`, `! 0c,0o,0w,0s`, or `!reload`\n\nType `!help full` for full help, `!help ids` for a list of valid spires and patterns.")
+			s.ChannelMessageSend(m.ChannelID, HelpShort)
 			return
 		}
 
@@ -100,99 +100,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 
 		if line == "ids" {
-			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf(`
--
-Valid spire IDs:
-`+"```"+`
-%v
-`+"```"+`
-The following patterns are currently loaded for %v:
-`+"```"+`
-%v
-`+"```"+`
-The following parts are available:
-`+"```"+`
-%v
-`+"```"+`
-`, strings.Join(spires, ", "), getSide(m.ChannelID).Name, strings.Join(patterns, ", "), strings.Join(parts, ", ")))
+			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf(HelpIDs,
+				strings.Join(spires, ", "), getSide(m.ChannelID).Name, strings.Join(patterns, ", "), strings.Join(parts, ", ")))
 			return
 		}
 
-		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf(`
--
-**Set Spire:** `+"`"+`!spires <list of comma separated spire IDs>`+"`"+`
-
-Set the spires used to calculate COWS. The special ID `+"`"+`Tweak`+"`"+` is the "spire" used by the Tweak Production (`+"`"+`!tweak`+"`"+`) command, and `+"`"+`Home`+"`"+` is all the home spires.
-
-In addition to specifying the entire list of spires you want, you can activate or deactivate spires with the following syntax:
-
-`+"```"+`
-!spires + <list of comma separated spire IDs>
-!spires - <list of comma separated spire IDs>
-`+"```"+`
-
-If no spires are specified this command will print the current list.
-
-Default spire list:
-
-`+"```"+`
-Tweak, Home
-`+"```"+`
-
-Valid spire IDs:
-
-`+"```"+`
-%v
-`+"```"+`
-
-**Calculate Design:** `+"`"+`!pattern <design ID>`+"`"+`
-
-Calculate the COWS for a named pattern. This pattern needs to be defined in the data files.
-
-If you wish, you can specify a count for a pattern, or specify multiple patterns to calculate together. For example, calculate the cost of one pattern "Test-A" and two pattern "Test-B":
-
-`+"```"+`
-!pattern Test-A, Test-B:2
-`+"```"+`
-
-To support tinkering, you can construct temporary patterns on the fly or modify existing patterns by adding parts to an existing pattern.
-
-`+"```"+`
-!pattern Test-A:2;+Part1;-Part2:3
-`+"```"+`
-
-The following patterns are currently loaded for %v:
-
-`+"```"+`
-%v
-`+"```"+`
-
-The following parts may be used:
-
-`+"```"+`
-%v
-`+"```"+`
-
-**Tweak Production:** `+"`"+`!tweak 0c,0o,0w,0s`+"`"+`
-
-Set a modifier for spire production. For this to take effect the `+"`"+`@`+"`"+` spire must be in the spire list.
-
-Note that the COWS numbers may be partly specified, specified in any order, or even left blank. Any missing value is set to 0.
-	   
-**Calculate from raw COWS:** `+"`"+`! 0c,0o,0w,0s`+"`"+`
-
-Calculate production line COWS from a raw COWS value.
-
-Note that the COWS numbers may be partly specified, specified in any order, or even left blank. Any missing value is set to 0.
-
-**General Calculator:** `+"`"+`!calc <expression>`+"`"+`
-
-Run the given Lua *expression*, and print the result. Basic math should work fine, but most common modules are not loaded and statements are not allowed, so it is pretty limited.
-
-**Reload Data Files:** `+"`"+`!reload`+"`"+`
-
-Reloads the data files and resets **all** settings to their defaults.
-`, strings.Join(spires, ", "), getSide(m.ChannelID).Name, strings.Join(patterns, ", "), strings.Join(parts, ", ")))
+		s.ChannelMessageSend(m.ChannelID, HelpLong)
 		return
 	case strings.HasPrefix(m.Content, "!spires"):
 		line := strings.TrimSpace(strings.TrimPrefix(m.Content, "!spires"))
@@ -286,12 +199,14 @@ Reloads the data files and resets **all** settings to their defaults.
 				}
 				bonuses[id].add(bonus.copy().mul(mult))
 			}
+			//partDump := ""
 			for _, id := range core.Parts {
 				part, ok := getSide(m.ChannelID).Parts[id]
 				if !ok {
 					s.ChannelMessageSend(m.ChannelID, "Invalid part ID.")
 					return
 				}
+				//partDump += part.ID + ": " + part.Cost.String() + "\n"
 				cost.add(part.Cost.copy().mul(mult))
 				for id, bonus := range part.Bonus {
 					_, ok := bonuses[id]
@@ -301,6 +216,7 @@ Reloads the data files and resets **all** settings to their defaults.
 					bonuses[id].add(bonus.copy().mul(mult))
 				}
 			}
+			//s.ChannelMessageSend(m.ChannelID, partDump)
 		}
 
 		out := "-\nRaw Cost:\n\t`" + cost.String() + "`"
