@@ -473,14 +473,7 @@ func parsePattern(pattern string) []string {
 		if id == "" {
 			continue
 		}
-		switch id[0] {
-		case '-':
-			partList[id[1:]] -= pcount
-		case '+':
-			partList[id[1:]] += pcount
-		default:
-			partList[id] += pcount
-		}
+		partList[id] -= pcount
 	}
 
 	ret := []string{}

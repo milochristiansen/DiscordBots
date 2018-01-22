@@ -63,9 +63,9 @@ If you wish, you can specify a count for a pattern, or specify multiple patterns
 |||
 !pattern Test-A, Test-B:2
 |||
-To support tinkering, you can construct temporary patterns on the fly or modify existing patterns by adding parts to an existing pattern.
+Some parts are actually collections of other parts. It can be useful to remove some of these "subparts" at times, so there is a special syntax for removing items from these lists:
 |||
-!pattern Test-A:2;+Part1;-Part2:3
+!pattern Test-A:2;Part1;Part2:3
 |||
 
 **Tweak Production:** |!tweak 0c,0o,0w,0s|
