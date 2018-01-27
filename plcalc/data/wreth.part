@@ -50,7 +50,17 @@
 
 		"Cost": {
 			"C": 1,
-			"O": 4
+			"O": 3
+		}
+	},
+	{
+		"Name": "EMERALD Aether Cannon (Batch)",
+		"Desc": "",
+		"ID": "2 EMERALD",
+
+		"Cost": {
+			"C": 2,
+			"O": 5
 		}
 	},
 	{
@@ -60,10 +70,23 @@
 
 		"Cost": {
 			"C": 1,
-			"O": 5
+			"O": 4
 		},
 		"Bonus": {
 			"IS": {"O": 1}
+		}
+	},
+	{
+		"Name": "EMERALD Itshanna Aether Cannon (Batch)",
+		"Desc": "",
+		"ID": "2 IS EMERALD",
+
+		"Cost": {
+			"C": 2,
+			"O": 7
+		},
+		"Bonus": {
+			"IS": {"O": 2}
 		}
 	},
 	{
