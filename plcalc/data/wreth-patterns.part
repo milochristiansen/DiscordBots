@@ -81,6 +81,60 @@
 		]
 	},
 	{
+		"Name": "Full IS Chimera Pattern Windrider",
+		"Desc": "",
+		"ID": "Chimera IS",
+
+		"Parts": [
+			"Windrider M Hull",
+
+			"M IS Core",
+			"S IS Lift",
+			"S IS Lift",
+
+			"IS Trim",
+			"IS Trim",
+			"IS Trim",
+			"IS Trim",
+
+			"IS Trim",
+			"IS Trim",
+			"IS Trim",
+			"IS Trim",
+
+			"IS Trim",
+			"IS Trim",
+			"IS Trim",
+			"IS Trim",
+
+			"IS Trim",
+			"IS Trim",
+			"IS Trim",
+			"IS Trim",
+
+			"Web",
+			"Web",
+			"Web",
+			"Web",
+
+			"Web",
+			"Web",
+			"Web",
+			"Web",
+
+			"Copper Armor",
+			"Copper Armor",
+
+			"Dragun",
+			"Dragun Mount",
+
+			"2 IS EMERALD",
+			"2 IS EMERALD",
+			"2 IS EMERALD",
+			"2 IS EMERALD"
+		]
+	},
+	{
 		"Name": "Mongoose Pattern Windrider",
 		"Desc": "",
 		"ID": "Mongoose",

@@ -183,14 +183,14 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		cost := &price{}
 		bonuses := map[string]*price{}
 		for _, pattern := range patterns {
-			part, count := parsePattern(pattern, m.ChannelID)
+			part, count := parsePattern(pattern, m.ChannelID, s)
 			if part == nil {
 				// Error messages are printed in the parsing function.
 				return
 			}
 
 			partDump := "-\n"
-			ok, dump := part.calc(cost, count, bonuses, m.ChannelID, "> ")
+			ok, dump := part.calc(cost, count, bonuses, m.ChannelID, "> ", s)
 			if !ok {
 				// Error messages are printed in the calc function.
 				return

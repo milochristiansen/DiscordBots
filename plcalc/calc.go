@@ -30,6 +30,8 @@ import "github.com/milochristiansen/lua/lmodmath"
 
 import "github.com/milochristiansen/axis2"
 
+import "github.com/bwmarrin/discordgo"
+
 import "encoding/json"
 import "strconv"
 import "strings"
@@ -66,7 +68,53 @@ const (
 	KasgyreSide = "Kasgyre needs to give me their channel ID"
 )
 
+var HomeSpire = &spire{
+	Name: "Home Spires",
+	Desc: "A fake 'spire' representing the home spires for each side.",
+	ID:   "Home",
+
+	Prod: BaseProd,
+}
+
 var Sides = map[string]*sideDef{
+	WrethSide: &sideDef{
+		Name: "Wreth",
+		SpireList: map[string]bool{
+			"Tweak": true,
+			"Home":  true,
+		},
+		Spires: map[string]*spire{
+			"Tweak": {
+				Name: "Income Modifier",
+				Desc: "A fake 'spire' used to preview income changes.",
+				ID:   "Tweak",
+
+				Prod: &price{},
+			},
+			"Home": HomeSpire,
+		},
+		Bonuses: map[string]*prodBonus{},
+		Parts:   map[string]*prodPart{},
+	},
+	KasgyreSide: &sideDef{
+		Name: "Kasgyre",
+		SpireList: map[string]bool{
+			"Tweak": true,
+			"Home":  true,
+		},
+		Spires: map[string]*spire{
+			"Tweak": {
+				Name: "Income Modifier",
+				Desc: "A fake 'spire' used to preview income changes.",
+				ID:   "Tweak",
+
+				Prod: &price{},
+			},
+			"Home": HomeSpire,
+		},
+		Bonuses: map[string]*prodBonus{},
+		Parts:   map[string]*prodPart{},
+	},
 	"DEFAULT": &sideDef{
 		Name: "Default side",
 		SpireList: map[string]bool{
@@ -81,13 +129,7 @@ var Sides = map[string]*sideDef{
 
 				Prod: &price{},
 			},
-			"Home": {
-				Name: "Home Spires",
-				Desc: "A fake 'spire' representing the home spires for each side.",
-				ID:   "Home",
-
-				Prod: BaseProd,
-			},
+			"Home": HomeSpire,
 		},
 		Bonuses: map[string]*prodBonus{},
 		Parts:   map[string]*prodPart{},
@@ -134,78 +176,34 @@ func calcCOWS(cows *price, side string) (bool, *price) {
 func loadConfig(fs *axis2.FileSystem) {
 	fmt.Println("Loading data files:")
 
+	oSides := Sides
 	Sides = map[string]*sideDef{
 		WrethSide: &sideDef{
-			Name: "",
-			SpireList: map[string]bool{
-				"Tweak": true,
-				"Home":  true,
-			},
+			Name:      "Wreth",
+			SpireList: oSides[WrethSide].SpireList,
 			Spires: map[string]*spire{
-				"Tweak": {
-					Name: "Income Modifier",
-					Desc: "A fake 'spire' used to preview income changes.",
-					ID:   "Tweak",
-
-					Prod: &price{},
-				},
-				"Home": {
-					Name: "Home Spires",
-					Desc: "A fake 'spire' representing the home spires for each side.",
-					ID:   "Home",
-
-					Prod: BaseProd,
-				},
+				"Tweak": oSides[WrethSide].Spires["Tweak"],
+				"Home":  HomeSpire,
 			},
 			Bonuses: map[string]*prodBonus{},
 			Parts:   map[string]*prodPart{},
 		},
 		KasgyreSide: &sideDef{
-			Name: "Kasgyre",
-			SpireList: map[string]bool{
-				"Tweak": true,
-				"Home":  true,
-			},
+			Name:      "Kasgyre",
+			SpireList: oSides[KasgyreSide].SpireList,
 			Spires: map[string]*spire{
-				"Tweak": {
-					Name: "Income Modifier",
-					Desc: "A fake 'spire' used to preview income changes.",
-					ID:   "Tweak",
-
-					Prod: &price{},
-				},
-				"Home": {
-					Name: "Home Spires",
-					Desc: "A fake 'spire' representing the home spires for each side.",
-					ID:   "Home",
-
-					Prod: BaseProd,
-				},
+				"Tweak": oSides[KasgyreSide].Spires["Tweak"],
+				"Home":  HomeSpire,
 			},
 			Bonuses: map[string]*prodBonus{},
 			Parts:   map[string]*prodPart{},
 		},
 		"DEFAULT": &sideDef{
-			Name: "Default side",
-			SpireList: map[string]bool{
-				"Tweak": true,
-				"Home":  true,
-			},
+			Name:      "Default side",
+			SpireList: oSides["DEFAULT"].SpireList,
 			Spires: map[string]*spire{
-				"Tweak": {
-					Name: "Income Modifier",
-					Desc: "A fake 'spire' used to preview income changes.",
-					ID:   "Tweak",
-
-					Prod: &price{},
-				},
-				"Home": {
-					Name: "Home Spires",
-					Desc: "A fake 'spire' representing the home spires for each side.",
-					ID:   "Home",
-
-					Prod: BaseProd,
-				},
+				"Tweak": oSides["DEFAULT"].Spires["Tweak"],
+				"Home":  HomeSpire,
 			},
 			Bonuses: map[string]*prodBonus{},
 			Parts:   map[string]*prodPart{},
@@ -390,14 +388,15 @@ type prodPart struct {
 	Parts []string
 }
 
-func (part *prodPart) calc(cost *price, count int, bonus map[string]*price, side, lvl string) (bool, string) {
-	cost.add(part.Cost.copy().mul(&price{C: float64(count), O: float64(count), W: float64(count), S: float64(count)}))
+func (part *prodPart) calc(cost *price, count int, bonus map[string]*price, side, lvl string, s *discordgo.Session) (bool, string) {
+	mult := &price{C: float64(count), O: float64(count), W: float64(count), S: float64(count)}
+	cost.add(part.Cost.copy().mul(mult))
 	for id, bdat := range part.Bonus {
 		_, ok := bonus[id]
 		if !ok {
 			bonus[id] = &price{}
 		}
-		bonus[id].add(bdat)
+		bonus[id].add(bdat.copy().mul(mult))
 	}
 
 	sidedef := getSide(side)
@@ -409,7 +408,7 @@ func (part *prodPart) calc(cost *price, count int, bonus map[string]*price, side
 			s.ChannelMessageSend(side, "Invalid part ID: `"+id+"`")
 			return false, ""
 		}
-		ok, dump := cpart.calc(cost, count, bonus, side, lvl+"> ")
+		ok, dump := cpart.calc(cost, count, bonus, side, lvl+"> ", s)
 		if !ok {
 			return false, ""
 		}
@@ -455,7 +454,7 @@ func parseCOWS(cows string) (bool, *price) {
 	return true, rtn
 }
 
-func parsePattern(pattern, side string) (*prodPart, int) {
+func parsePattern(pattern, side string, s *discordgo.Session) (*prodPart, int) {
 	ids := strings.Split(pattern, ";")
 
 	partList := map[string]int{}

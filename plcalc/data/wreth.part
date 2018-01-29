@@ -200,6 +200,26 @@
 			"IS": {"O": 20}
 		}
 	},
+	{
+		"Name": "Electro-Spark Propagation Transmitter",
+		"Desc": "",
+		"ID": "ESP-T",
+
+		"Cost": {
+			"C": 6,
+			"O": 12
+		}
+	},
+	{
+		"Name": "Electro-Spark Propagation Receiver",
+		"Desc": "",
+		"ID": "ESP-R",
+
+		"Cost": {
+			"C": 3,
+			"O": 2
+		}
+	},
 
 	{
 		"Name": "Suppressor Repeating Crossbow",
