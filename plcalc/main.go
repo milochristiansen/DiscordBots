@@ -85,8 +85,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "Debug mode toggled.")
 	case strings.HasPrefix(m.Content, "!help"):
 		line := strings.TrimSpace(strings.TrimPrefix(m.Content, "!help"))
-		if line == "" {
-			s.ChannelMessageSend(m.ChannelID, HelpShort)
+		if line == "full" {
+			s.ChannelMessageSend(m.ChannelID, HelpLong)
 			return
 		}
 
@@ -105,7 +105,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			return
 		}
 
-		s.ChannelMessageSend(m.ChannelID, HelpLong)
+		s.ChannelMessageSend(m.ChannelID, HelpShort)
 		return
 	case strings.HasPrefix(m.Content, "!spires"):
 		line := strings.TrimSpace(strings.TrimPrefix(m.Content, "!spires"))
