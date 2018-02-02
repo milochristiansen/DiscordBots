@@ -479,7 +479,11 @@ func parsePattern(pattern, side string, s *discordgo.Session) (*prodPart, int) {
 
 		_, ok := getSide(side).Parts[id]
 		if !ok {
-			s.ChannelMessageSend(side, "Part specified for removal does not exist: `"+id+"`")
+			if i == 0 {
+				s.ChannelMessageSend(side, "First part ID does not exist: `"+id+"`")
+			} else {
+				s.ChannelMessageSend(side, "Part specified for removal does not exist: `"+id+"`")
+			}
 			return nil, 0
 		}
 		if i == 0 {
@@ -490,11 +494,8 @@ func parsePattern(pattern, side string, s *discordgo.Session) (*prodPart, int) {
 		partList[id] += pcount
 	}
 
-	base, ok := getSide(side).Parts[firstPart]
-	if !ok {
-		s.ChannelMessageSend(side, "First part ID does not exist: `"+firstPart+"`")
-		return nil, 0
-	}
+	// We already made sure this exists.
+	base := getSide(side).Parts[firstPart]
 	ret := &prodPart{
 		Cost:  base.Cost,
 		Bonus: base.Bonus,
