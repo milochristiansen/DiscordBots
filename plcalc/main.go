@@ -58,6 +58,8 @@ func main() {
 		return
 	}
 
+	_ = dg.UpdateStatus(-1, "War of the Cinder Spires")
+
 	for {
 		time.Sleep(1 * time.Hour)
 	}

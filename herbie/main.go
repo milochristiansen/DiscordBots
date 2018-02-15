@@ -63,6 +63,9 @@ func main() {
 		return
 	}
 
+	// Discard the error, it doesn't hurt anything if this fails.
+	_ = dg.UpdateStatus(-1, "Type Herbie? for help.")
+
 	fp := gofeed.NewParser()
 	for {
 		channels, err := getChannels()
