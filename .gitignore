@@ -22,3 +22,6 @@
 
 # API keys
 key.go
+
+# Test Bot
+tester/

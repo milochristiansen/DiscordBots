@@ -51,14 +51,13 @@ func main() {
 	}
 
 	dg.AddHandler(messageCreate)
+	dg.AddHandler(onConnect)
 
 	err = dg.Open()
 	if err != nil {
 		fmt.Println("Error opening Discord connection:", err)
 		return
 	}
-
-	_ = dg.UpdateStatus(-1, "War of the Cinder Spires")
 
 	for {
 		time.Sleep(1 * time.Hour)
@@ -261,4 +260,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 		return
 	}
+}
+
+func onConnect(s *discordgo.Session, r *discordgo.Ready) {
+	// Discard the error, it doesn't hurt anything if this fails.
+	_ = dg.UpdateStatus(-1, "War of the Cinder Spires")
 }

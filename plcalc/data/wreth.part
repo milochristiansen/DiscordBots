@@ -20,6 +20,17 @@
 		}
 	},
 	{
+		"Name": "Stormprince Destroyer Hull",
+		"Desc": "",
+		"ID": "Stormprince Hull",
+
+		"Cost": {
+			"C": 8,
+			"O": 15,
+			"W": 35
+		}
+	},
+	{
 		"Name": "Dragun Skyskiff",
 		"Desc": "",
 		"ID": "Fire Skiff Hull",
@@ -274,6 +285,18 @@
 		},
 		"Bonus": {
 			"IS": {"O": 1}
+		}
+	},
+	{
+		"Name": "Eastern Cave Dragun",
+		"Desc": "",
+		"ID": "ECD",
+
+		"Cost": {
+			"C": 2,
+			"O": 6,
+			"W": 4,
+			"S": 1
 		}
 	},
 	{

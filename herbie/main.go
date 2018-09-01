@@ -56,15 +56,13 @@ func main() {
 	}
 
 	dg.AddHandler(messageCreate)
+	dg.AddHandler(onConnect)
 
 	err = dg.Open()
 	if err != nil {
 		fmt.Println("Error opening Discord connection:", err)
 		return
 	}
-
-	// Discard the error, it doesn't hurt anything if this fails.
-	_ = dg.UpdateStatus(-1, "Type Herbie? for help.")
 
 	fp := gofeed.NewParser()
 	for {
@@ -169,5 +167,18 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			return
 		}
 		s.ChannelMessageSend(m.ChannelID, "Herbie looks bored.")
+	default:
+		t, msg := time.Now(), strings.ToLower(m.Content)
+		// September 4th, the day Flick throws Herbie through the portal.
+		if t.Month() == time.September && t.Day() == 4 {
+			if strings.Contains(msg, "happy") && strings.Contains(msg, "birthday") && strings.Contains(msg, "herbie") {
+				s.ChannelMessageSend(m.ChannelID, "Herbie seems pleased with your greeting.")
+			}
+		}
 	}
+}
+
+func onConnect(s *discordgo.Session, r *discordgo.Ready) {
+	// Discard the error, it doesn't hurt anything if this fails.
+	_ = s.UpdateStatus(-1, "Type Herbie? for help.")
 }

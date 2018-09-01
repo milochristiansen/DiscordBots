@@ -193,5 +193,121 @@
 			"SUCKERPUNCH",
 			"SUCKERPUNCH"
 		]
+	},
+	{
+		"Name": "Basic Stormprince",
+		"Desc": "",
+		"ID": "Stormprince",
+
+		"Parts": [
+			"Stormprince Hull",
+
+			"M Core",
+			"M Core",
+
+			"S Lift",
+			"S Lift",
+			"S Lift",
+			"S Lift",
+			"S Lift",
+
+			"Trim", "Trim", "Trim", "Trim", "Trim",
+			"Trim", "Trim", "Trim", "Trim", "Trim",
+			"Trim", "Trim", "Trim", "Trim", "Trim",
+			"Trim", "Trim", "Trim", "Trim", "Trim",
+			"Trim", "Trim", "Trim", "Trim", "Trim",
+			"Trim", "Trim", "Trim", "Trim", "Trim",
+			"Trim", "Trim", "Trim", "Trim", "Trim",
+			"Trim", "Trim", "Trim", "Trim", "Trim",
+			"Trim", "Trim", "Trim", "Trim", "Trim",
+			"Trim", "Trim", "Trim", "Trim", "Trim",
+			"Trim", "Trim", "Trim", "Trim", "Trim",
+			"Trim",
+
+			"Web", "Web", "Web", "Web", "Web",
+			"Web", "Web", "Web", "Web", "Web",
+			"Web", "Web", "Web", "Web", "Web",
+			"Web", "Web", "Web", "Web", "Web",
+			"Web", "Web", "Web", "Web", "Web",
+			"Web", "Web", "Web", "Web", "Web",
+
+			"Copper Armor",
+			"Copper Armor",
+			"Copper Armor",
+			"Copper Armor",
+			"Copper Armor",
+
+			"Copper Armor",
+			"Copper Armor",
+			"Copper Armor",
+			"Copper Armor",
+			"Copper Armor",
+
+			"2 EMERALD", "2 EMERALD", "2 EMERALD",
+			"2 EMERALD", "2 EMERALD", "2 EMERALD",
+			"2 EMERALD", "2 EMERALD", "2 EMERALD",
+			"2 EMERALD", "2 EMERALD", "2 EMERALD",
+			
+			"2 EMERALD", "2 EMERALD", "2 EMERALD",
+			"2 EMERALD", "EMERALD"
+		]
+	},
+	{
+		"Name": "IS Stormprince",
+		"Desc": "",
+		"ID": "Stormprince IS",
+
+		"Parts": [
+			"Stormprince Hull",
+
+			"M IS Core",
+			"M IS Core",
+
+			"S IS Lift",
+			"S IS Lift",
+			"S IS Lift",
+			"S IS Lift",
+			"S IS Lift",
+
+			"IS Trim", "IS Trim", "IS Trim", "IS Trim", "IS Trim",
+			"IS Trim", "IS Trim", "IS Trim", "IS Trim", "IS Trim",
+			"IS Trim", "IS Trim", "IS Trim", "IS Trim", "IS Trim",
+			"IS Trim", "IS Trim", "IS Trim", "IS Trim", "IS Trim",
+			"IS Trim", "IS Trim", "IS Trim", "IS Trim", "IS Trim",
+			"IS Trim", "IS Trim", "IS Trim", "IS Trim", "IS Trim",
+			"IS Trim", "IS Trim", "IS Trim", "IS Trim", "IS Trim",
+			"IS Trim", "IS Trim", "IS Trim", "IS Trim", "IS Trim",
+			"IS Trim", "IS Trim", "IS Trim", "IS Trim", "IS Trim",
+			"IS Trim", "IS Trim", "IS Trim", "IS Trim", "IS Trim",
+			"IS Trim", "IS Trim", "IS Trim", "IS Trim", "IS Trim",
+			"IS Trim",
+
+			"Web", "Web", "Web", "Web", "Web",
+			"Web", "Web", "Web", "Web", "Web",
+			"Web", "Web", "Web", "Web", "Web",
+			"Web", "Web", "Web", "Web", "Web",
+			"Web", "Web", "Web", "Web", "Web",
+			"Web", "Web", "Web", "Web", "Web",
+
+			"Copper Armor",
+			"Copper Armor",
+			"Copper Armor",
+			"Copper Armor",
+			"Copper Armor",
+
+			"Copper Armor",
+			"Copper Armor",
+			"Copper Armor",
+			"Copper Armor",
+			"Copper Armor",
+
+			"2 IS EMERALD", "2 IS EMERALD", "2 IS EMERALD",
+			"2 IS EMERALD", "2 IS EMERALD", "2 IS EMERALD",
+			"2 IS EMERALD", "2 IS EMERALD", "2 IS EMERALD",
+			"2 IS EMERALD", "2 IS EMERALD", "2 IS EMERALD",
+			
+			"2 IS EMERALD", "2 IS EMERALD", "2 IS EMERALD",
+			"2 IS EMERALD", "IS EMERALD"
+		]
 	}
 ]
