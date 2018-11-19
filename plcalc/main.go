@@ -264,5 +264,5 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func onConnect(s *discordgo.Session, r *discordgo.Ready) {
 	// Discard the error, it doesn't hurt anything if this fails.
-	_ = dg.UpdateStatus(-1, "War of the Cinder Spires")
+	_ = s.UpdateStatus(-1, "War of the Cinder Spires")
 }
