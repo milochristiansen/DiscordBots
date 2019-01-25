@@ -88,11 +88,11 @@ func (a *AlertData) AsEmbed(log bool) *discordgo.MessageEmbed {
 		})
 	}
 
-	fields = append(fields, &discordgo.MessageEmbedField{
-		Name:   "Debug:",
-		Value:  a.ID,
-		Inline: false,
-	})
+	// fields = append(fields, &discordgo.MessageEmbedField{
+	// 	Name:   "Debug:",
+	// 	Value:  a.ID,
+	// 	Inline: false,
+	// })
 
 	return &discordgo.MessageEmbed{
 		Color:       color, // Blue when not started, Green while running, Red when finished.
@@ -120,47 +120,6 @@ type AlertMissionData struct {
 type AlertRewardData struct {
 	Desc string `json:"asString"`
 }
-
-/*
-[
-  {
-    "id": "string",
-    "activation": "string",
-    "expiry": "string",
-    "mission": {
-      "node": "string",
-      "type": "string",
-      "faction": "string",
-      "reward": {
-        "items": [
-          {}
-        ],
-        "countedItems": [
-          {
-            "count": 0,
-            "type": "string"
-          }
-        ],
-        "credits": 0,
-        "asString": "string",
-        "itemString": "string",
-        "thumbnail": "string",
-        "color": 0
-      },
-      "minEnemyLevel": 0,
-      "maxEnemyLevel": 0,
-      "maxWaveNum": 0,
-      "nightmare": true,
-      "archwingRequired": true
-    },
-    "expired": true,
-    "eta": "string",
-    "rewardTypes": [
-      {}
-    ]
-  }
-]
-*/
 
 type InvasionData struct {
 	ID             string          `json:"id"`
@@ -198,11 +157,11 @@ func (a *InvasionData) AsEmbed(log bool) *discordgo.MessageEmbed {
 		color = 0xff0000
 	}
 
-	fields = append(fields, &discordgo.MessageEmbedField{
-		Name:   "Debug:",
-		Value:  a.ID,
-		Inline: false,
-	})
+	// fields = append(fields, &discordgo.MessageEmbedField{
+	// 	Name:   "Debug:",
+	// 	Value:  a.ID,
+	// 	Inline: false,
+	// })
 
 	msg := ""
 	if a.VSInfestation {
