@@ -27,6 +27,12 @@ import "time"
 
 import "github.com/bwmarrin/discordgo"
 
+type Embedable interface {
+	AsEmbed(log bool) *discordgo.MessageEmbed
+	FilterString() string
+	GetID() (string, bool)
+}
+
 type AlertData struct {
 	ID         string           `json:"id"`
 	Activation time.Time        `json:"activation"`
@@ -96,6 +102,14 @@ func (a *AlertData) AsEmbed(log bool) *discordgo.MessageEmbed {
 	}
 }
 
+func (a *AlertData) FilterString() string {
+	return a.Mission.Reward.Desc
+}
+
+func (a *AlertData) GetID() (string, bool) {
+	return a.ID, true
+}
+
 type AlertMissionData struct {
 	Node    string          `json:"node"`
 	Type    string          `json:"type"`
@@ -147,3 +161,74 @@ type AlertRewardData struct {
   }
 ]
 */
+
+type InvasionData struct {
+	ID             string          `json:"id"`
+	Node           string          `json:"node"`
+	Defender       string          `json:"defendingFaction"`
+	VSInfestation  bool            `json:"vsInfestation"`
+	Activation     time.Time       `json:"activation"`
+	AttackerReward AlertRewardData `json:"attackerReward"`
+	DefenderReward AlertRewardData `json:"defenderReward"`
+	Completed      bool            `json:"completed"`
+	ETA            string          `json:"eta"`
+}
+
+func (a *InvasionData) AsEmbed(log bool) *discordgo.MessageEmbed {
+	fields := []*discordgo.MessageEmbedField{}
+
+	color := 0x00ff00 // Assume green (AKA, "currently running").
+
+	// If it hasn't started yet, add a field with the time till start.
+	if a.Activation.After(time.Now()) {
+		color = 0x0000ff
+		fields = append(fields, &discordgo.MessageEmbedField{
+			Name:   "Starting in:",
+			Value:  fmt.Sprintf("%dm", a.Activation.Sub(time.Now()).Round(time.Minute)/time.Minute),
+			Inline: true,
+		})
+	}
+
+	if log {
+		//fmt.Println()
+	}
+
+	// If it has expired change the color to red.
+	if a.Completed {
+		color = 0xff0000
+	}
+
+	fields = append(fields, &discordgo.MessageEmbedField{
+		Name:   "Debug:",
+		Value:  a.ID,
+		Inline: false,
+	})
+
+	msg := ""
+	if a.VSInfestation {
+		msg = a.DefenderReward.Desc
+	} else {
+		msg = a.AttackerReward.Desc + " vs " + a.DefenderReward.Desc
+	}
+
+	return &discordgo.MessageEmbed{
+		Color:       color, // Blue when not started, Green while running, Red when finished.
+		Title:       "Invasion:",
+		Description: "At " + a.Node + " for " + msg,
+		Fields:      fields,
+	}
+}
+
+func (a *InvasionData) FilterString() string {
+	msg := ""
+	if a.VSInfestation {
+		msg = a.DefenderReward.Desc
+	} else {
+		msg = a.AttackerReward.Desc + " vs " + a.DefenderReward.Desc
+	}
+	return msg
+}
+
+func (a *InvasionData) GetID() (string, bool) {
+	return a.ID, false
+}

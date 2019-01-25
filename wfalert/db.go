@@ -39,14 +39,11 @@ create table if not exists UserFilters (
 	Filter text
 );
 
-create table if not exists ActiveAlerts (
-	ID text
-);
-
-create table if not exists AlertMessages (
+create table if not exists Messages (
 	MID text,
 	CID text,
-	AID text
+	AID text,
+	Typ int
 );
 `
 
@@ -59,13 +56,9 @@ var Queries = map[string]*queryHolder{
 	"FilterRemove": &queryHolder{`delete from UserFilters where (User = ? and Filter = ?);`, nil},
 	"FilterList":   &queryHolder{`select User, Filter from UserFilters where (?1 = "" or User = ?1);`, nil},
 
-	"AlertInsert": &queryHolder{`insert into ActiveAlerts (ID) values (?);`, nil},
-	"AlertRemove": &queryHolder{`delete from ActiveAlerts where ID = ?;`, nil},
-	"AlertList":   &queryHolder{`select ID from ActiveAlerts;`, nil},
-
-	"MessageInsert": &queryHolder{`insert into AlertMessages (AID, CID, MID) values (?, ?, ?);`, nil},
-	"MessageRemove": &queryHolder{`delete from AlertMessages where AID = ?;`, nil},
-	"MessageList":   &queryHolder{`select CID, MID from AlertMessages where AID = ?;`, nil},
+	"MessageInsert": &queryHolder{`insert into Messages (CID, MID, AID, Typ) values (?, ?, ?, ?);`, nil},
+	"MessageRemove": &queryHolder{`delete from Messages where AID = ? and Typ = ?;`, nil},
+	"MessageList":   &queryHolder{`select CID, MID, AID, Typ from Messages;`, nil},
 }
 
 func addChannel(id string) error {
@@ -132,66 +125,57 @@ type userFilter struct {
 	Filter string
 }
 
-func addActiveAlert(id string) error {
-	_, err := Queries["AlertInsert"].Preped.Exec(id)
-	return err
-}
-
-func removeActiveAlert(id string) error {
-	_, err := Queries["AlertRemove"].Preped.Exec(id)
-	if err != nil {
-		return err
+func addMessage(cid, mid, aid string, alert bool) error {
+	t := 0
+	if alert {
+		t = 1
 	}
-	_, err = Queries["MessageRemove"].Preped.Exec(id)
+	_, err := Queries["MessageInsert"].Preped.Exec(cid, mid, aid, t)
 	return err
 }
 
-func addActiveAlertMessage(aid, cid, mid string) error {
-	_, err := Queries["MessageInsert"].Preped.Exec(aid, cid, mid)
+func removeMessage(aid string, alert bool) error {
+	t := 0
+	if alert {
+		t = 1
+	}
+	_, err := Queries["MessageRemove"].Preped.Exec(aid, t)
 	return err
 }
 
-func getActiveAlerts() (map[string]bool, error) {
-	rows, err := Queries["AlertList"].Preped.Query()
+func getMessages() ([2]map[string][]event, error) {
+	rows, err := Queries["MessageList"].Preped.Query()
 	if err != nil {
-		return nil, err
+		return [2]map[string][]event{}, err
 	}
 	defer rows.Close()
 
-	alerts := map[string]bool{}
+	events := [2]map[string][]event{map[string][]event{}, map[string][]event{}}
 	for rows.Next() {
-		f := new(string)
-		err := rows.Scan(f)
+		typ, aid := 0, ""
+		f := event{}
+		err := rows.Scan(&f.CID, &f.MID, &aid, &typ)
 		if err != nil {
-			return nil, err
+			return [2]map[string][]event{}, err
 		}
-		alerts[*f] = true
+
+		// Make sure bad DB data doesn't crash us.
+		if typ != 0 {
+			typ = 1
+		}
+		events[typ][aid] = append(events[typ][aid], f)
 	}
-	return alerts, nil
+	return events, nil
 }
 
-func getActiveAlertMessages(id string) ([][2]string, error) {
-	rows, err := Queries["MessageList"].Preped.Query(id)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	messages := [][2]string{}
-	for rows.Next() {
-		c, m := new(string), new(string)
-		err := rows.Scan(c, m)
-		if err != nil {
-			return nil, err
-		}
-		messages = append(messages, [2]string{*c, *m})
-	}
-	return messages, nil
+type event struct {
+	CID string
+	MID string
 }
 
 func init() {
 	var err error
-	DB, err = sql.Open("sqlite3", "file:feeds.db")
+	DB, err = sql.Open("sqlite3", "file:wfalert.db")
 	if err != nil {
 		panic(err)
 	}

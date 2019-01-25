@@ -34,16 +34,9 @@ import "github.com/bwmarrin/discordgo"
 // https://discordapp.com/oauth2/authorize?client_id=472522276101816320&scope=bot&permissions=2048
 var (
 	APIKey           string
-	WarframeEndpoint = "https://api.warframestat.us/pc/alerts"
+	WarframeEndpoint = "https://api.warframestat.us/pc/"
+	//WarframeEndpoint = "https://api.warframestat.us/pc/invasions"
 )
-
-/*
-TODO:
-
-* Alerts for invasions
-* Look into using embeds.
-
-*/
 
 func main() {
 	// Spin up the server.
@@ -79,14 +72,15 @@ func main() {
 			continue
 		}
 
-		activeAlerts, err := getActiveAlerts()
+		messages, err := getMessages()
 		if err != nil {
 			fmt.Println("DB Error:", err)
 			time.Sleep(30 * time.Second)
 			continue
 		}
 
-		r, err := http.Get(WarframeEndpoint)
+		// Alerts
+		r, err := http.Get(WarframeEndpoint + "alerts")
 		if err != nil {
 			if r != nil {
 				r.Body.Close()
@@ -106,56 +100,56 @@ func main() {
 			continue
 		}
 
-		handled := map[string]bool{}
-		for _, item := range alerts {
-			handled[item.ID] = true
-
-			// Alert has expired and is in DB.
-			if activeAlerts[item.ID] && item.Expired {
-				err = removeActiveAlert(item.ID)
-				if err != nil {
-					fmt.Println("DB Error:", err)
-				}
-				fmt.Println("expired:", item.ID)
-				editMessage(dg, item.ID, item, true)
-				continue
+		// Invasions
+		r, err = http.Get(WarframeEndpoint + "invasions")
+		if err != nil {
+			if r != nil {
+				r.Body.Close()
 			}
-
-			// Alert has expired and is not in DB
-			if item.Expired {
-				fmt.Println("expired, no DB:", item.ID)
-				editMessage(dg, item.ID, item, true) // Just in case. Probably won't do anything.
-				continue
-			}
-
-			// Alert already sent, update the message.
-			if _, ok := activeAlerts[item.ID]; ok {
-				//fmt.Println("already sent:", item.Mission.Reward.Desc)
-				editMessage(dg, item.ID, item, false)
-				continue
-			}
-
-			err = addActiveAlert(item.ID)
-			if err != nil {
-				fmt.Println("DB Error:", err)
-				continue
-			}
-
-			fmt.Println("sending:", item.ID)
-			sendMessage(dg, channels, filters, item)
+			fmt.Println("HTTP GET Error:", err)
+			time.Sleep(30 * time.Second)
+			continue
 		}
 
-		// Check for orphan items in the DB.
-		for id := range activeAlerts {
-			if handled[id] {
+		dec = json.NewDecoder(r.Body)
+		invasions := []*InvasionData{}
+		err = dec.Decode(&invasions)
+		r.Body.Close()
+		if err != nil {
+			fmt.Println("Payload Decode Error:", err)
+			time.Sleep(30 * time.Second)
+			continue
+		}
+
+		// Send/update alert/invasion messages.
+		for _, alert := range alerts {
+			message, ok := messages[1][alert.ID]
+			if !ok {
+				sendMessage(dg, channels, filters, alert)
 				continue
 			}
-			fmt.Println("orphan:", id)
-			err = removeActiveAlert(id)
-			if err != nil {
-				fmt.Println("DB Error:", err)
+			// update messages
+			editMessages(dg, message, alert, false)
+			delete(messages[1], alert.ID)
+		}
+		for _, invasion := range invasions {
+			message, ok := messages[0][invasion.ID]
+			if !ok {
+				sendMessage(dg, channels, filters, invasion)
+				continue
 			}
-			editMessage(dg, id, nil, true)
+			// update messages
+			editMessages(dg, message, invasion, false)
+			delete(messages[0], invasion.ID)
+		}
+
+		// Kill orphans
+		for typ := 0; typ < 2; typ++ {
+			alert := typ == 1
+			for aid, messages := range messages[typ] {
+				editMessages(dg, messages, nil, false)
+				removeMessage(aid, alert)
+			}
 		}
 
 		time.Sleep(1 * time.Minute)
@@ -163,7 +157,7 @@ func main() {
 	//dg.Close()
 }
 
-func sendMessage(s *discordgo.Session, channels []string, filters []userFilter, item *AlertData) {
+func sendMessage(s *discordgo.Session, channels []string, filters []userFilter, item Embedable) {
 	msg := item.AsEmbed(false)
 	for _, id := range channels {
 		mdat, err := s.ChannelMessageSendEmbed(id, msg)
@@ -171,14 +165,15 @@ func sendMessage(s *discordgo.Session, channels []string, filters []userFilter, 
 			fmt.Println("Error sending message to:", id, err)
 			continue
 		}
-		err = addActiveAlertMessage(item.ID, id, mdat.ID)
+		aid, alert := item.GetID()
+		err = addMessage(id, mdat.ID, aid, alert)
 		if err != nil {
 			fmt.Println("DB Error:", err)
 			continue
 		}
 	}
 	for _, filter := range filters {
-		if !strings.Contains(strings.ToLower(item.Mission.Reward.Desc), filter.Filter) {
+		if !strings.Contains(strings.ToLower(item.FilterString()), filter.Filter) {
 			continue
 		}
 
@@ -192,7 +187,8 @@ func sendMessage(s *discordgo.Session, channels []string, filters []userFilter, 
 			fmt.Println("Error sending message to:", ch.ID, err)
 			continue
 		}
-		err = addActiveAlertMessage(item.ID, ch.ID, mdat.ID)
+		aid, alert := item.GetID()
+		err = addMessage(ch.ID, mdat.ID, aid, alert)
 		if err != nil {
 			fmt.Println("DB Error:", err)
 			continue
@@ -200,27 +196,21 @@ func sendMessage(s *discordgo.Session, channels []string, filters []userFilter, 
 	}
 }
 
-func editMessage(s *discordgo.Session, aid string, item *AlertData, log bool) {
+func editMessages(s *discordgo.Session, messages []event, item Embedable, log bool) {
 	if log {
 		//fmt.Printf("%#v\n", item)
 	}
 
-	messages, err := getActiveAlertMessages(aid)
-	if err != nil {
-		fmt.Println("DB Error:", err)
-		return
-	}
-
 	for _, message := range messages {
 		if item == nil {
-			m, err := s.ChannelMessage(message[0], message[1])
+			m, err := s.ChannelMessage(message.CID, message.MID)
 			if err != nil {
 				fmt.Println("Error reading old message:", err)
 				continue
 			}
 
 			if len(m.Embeds) == 0 {
-				fmt.Println("Message with no embed:", message[0], err)
+				fmt.Println("Message with no embed:", message.MID, err)
 				continue
 			}
 
@@ -228,16 +218,16 @@ func editMessage(s *discordgo.Session, aid string, item *AlertData, log bool) {
 			embed.Color = 0xff0000
 			embed.Fields = nil
 
-			_, err = s.ChannelMessageEditEmbed(message[0], message[1], embed)
+			_, err = s.ChannelMessageEditEmbed(message.CID, message.MID, embed)
 			if err != nil {
-				fmt.Println("Error editing message to:", message[0], err)
+				fmt.Println("Error editing message to:", message.MID, err)
 			}
 			continue
 		}
 
-		_, err := s.ChannelMessageEditEmbed(message[0], message[1], item.AsEmbed(log))
+		_, err := s.ChannelMessageEditEmbed(message.CID, message.MID, item.AsEmbed(log))
 		if err != nil {
-			fmt.Println("Error editing message to:", message[0], err)
+			fmt.Println("Error editing message to:", message.MID, err)
 			continue
 		}
 	}
