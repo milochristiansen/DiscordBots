@@ -36,52 +36,16 @@ create table if not exists ReadStories (
 
 	Published integer
 );
-
-create table if not exists Channels (
-	ID text
-)
 `
 
 var Queries = map[string]*queryHolder{
 	"StoryInsert":   &queryHolder{`insert into ReadStories (Name, URL, Published) values (?, ?, ?);`, nil},
 	"StoryList":     &queryHolder{`select URL from ReadStories;`, nil},
-	"ChannelInsert": &queryHolder{`insert into Channels (ID) values (?);`, nil},
-	"ChannelRemove": &queryHolder{`delete from Channels where ID = ?;`, nil},
-	"ChannelList":   &queryHolder{`select ID from Channels;`, nil},
-}
-
-func addChannel(id string) error {
-	_, err := Queries["ChannelInsert"].Preped.Exec(id)
-	return err
-}
-
-func removeChannel(id string) error {
-	_, err := Queries["ChannelRemove"].Preped.Exec(id)
-	return err
 }
 
 func addStory(name, url string, published int64) error {
 	_, err := Queries["StoryInsert"].Preped.Exec(name, url, published)
 	return err
-}
-
-func getChannels() ([]string, error) {
-	rows, err := Queries["ChannelList"].Preped.Query()
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	channels := []string{}
-	for rows.Next() {
-		f := new(string)
-		err := rows.Scan(f)
-		if err != nil {
-			return nil, err
-		}
-		channels = append(channels, *f)
-	}
-	return channels, nil
 }
 
 func getStories() (map[string]bool, error) {
