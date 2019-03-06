@@ -39,7 +39,9 @@ var (
 	Site   = "https://ceruleanscrawling.wordpress.com"
 	Feeds  = []Feed{
 		{"/category/summus-proelium/feed", []string{"543593314746761228"}},
-		{"/feed", []string{"383419886250098691"}},
+		{"/category/uncategorized/feed", []string{"383419886250098691"}},
+		{"/category/heretical-edge/feed", []string{"383419886250098691"}},
+		//{"/feed", []string{"383419886250098691"}}, // Site wide feed. No longer used.
 	}
 )
 
