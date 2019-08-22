@@ -65,7 +65,7 @@ type sideDef struct {
 
 const (
 	WrethSide   = "340499300184489986"
-	KasgyreSide = "Kasgyre needs to give me their channel ID"
+	KasgyreSide = "340499239962542080"
 )
 
 var HomeSpire = &spire{
