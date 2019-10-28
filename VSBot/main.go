@@ -23,9 +23,10 @@ misrepresented as being the original software.
 // Simple bot for the Vintage Story Discord.
 package main
 
+import "os/signal"
 import "strings"
-import "time"
 import "fmt"
+import "os"
 
 import "github.com/bwmarrin/discordgo"
 
@@ -56,10 +57,18 @@ func main() {
 		return
 	}
 
-	for {
-		time.Sleep(1 * time.Hour)
-	}
-	//dg.Close()
+	exitSignal := make(chan os.Signal)
+	signal.Notify(exitSignal, os.Interrupt, os.Kill)
+	<-exitSignal
+	dg.Close()
+}
+
+var prefixes = []string{
+	"youtube.com/watch",
+	"youtu.be/",
+	"twitch.tv/",
+	"dlive.tv/",
+	"mixer.com/",
 }
 
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -67,12 +76,11 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if strings.Contains(m.Content, "www.youtube.com/watch") ||
-		strings.Contains(m.Content, "youtu.be/") ||
-		strings.Contains(m.Content, "twitch.tv/") {
-
-		s.ChannelMessageSend(ToChannel, "<@"+m.Author.ID+">: "+m.Content)
-		return
+	for _, prefix := range prefixes {
+		if strings.Contains(m.Content, prefix) {
+			s.ChannelMessageSend(ToChannel, "<@"+m.Author.ID+">: "+m.Content)
+			return
+		}
 	}
 }
 
