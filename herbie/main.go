@@ -38,16 +38,17 @@ var (
 	APIKey string
 	Site   = "https://ceruleanscrawling.wordpress.com"
 	Feeds  = []Feed{
-		{"/category/summus-proelium/feed", []string{"543593314746761228"}},
-		{"/category/uncategorized/feed", []string{"383419886250098691"}},
-		{"/category/heretical-edge/feed", []string{"383419886250098691"}},
-		//{"/feed", []string{"383419886250098691"}}, // Site wide feed. No longer used.
+		{"/category/summus-proelium/feed", []string{"543593314746761228"}, "<@850455939625517096>"},
+		{"/category/uncategorized/feed", []string{"383419886250098691"}, "@everyone"},
+		{"/category/heretical-edge/feed", []string{"383419886250098691"}, "<@850455420912140320>"},
+		//{"/feed", []string{"383419886250098691"}, "@everyone"}, // Site wide feed. No longer used.
 	}
 )
 
 type Feed struct {
 	URL      string
 	Channels []string
+	Role     string
 }
 
 func main() {
@@ -98,7 +99,7 @@ func main() {
 					stories[item.Link] = true // Needed so that if the next feed in the list has this too it will suppress it.
 
 					for _, id := range fdata.Channels {
-						_, err := dg.ChannelMessageSend(id, "@everyone New Post: "+item.Link)
+						_, err := dg.ChannelMessageSend(id, fdata.Role+" New Post: "+item.Link)
 						if err != nil {
 							fmt.Println("Error sending message to:", id, err)
 						}
@@ -156,5 +157,11 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func onConnect(s *discordgo.Session, r *discordgo.Ready) {
 	// Discard the error, it doesn't hurt anything if this fails.
-	_ = s.UpdateStatus(-1, "Type Herbie? for help.")
+	_ = s.UpdateStatusComplex(discordgo.UpdateStatusData{
+		Status: "online",
+		Activities: []*discordgo.Activity{{
+			Name: "Type Herbie? for help.",
+			Type: discordgo.ActivityTypeCustom,
+		}},
+	})
 }
