@@ -5,9 +5,11 @@ WORKDIR /app
 
 RUN apk --no-cache add git gcc musl-dev
 
-COPY . .
+COPY .. .
 
-RUN go build -o herbie.bin
+WORKDIR /app/herbie
+
+RUN go build -o ../herbie.bin
 
 ########################################################################################################################
 
