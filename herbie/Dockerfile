@@ -1,0 +1,22 @@
+
+FROM arm32v6/golang:1.16-alpine3.13 AS build-go
+
+WORKDIR /app
+
+RUN apk --no-cache add git gcc musl-dev
+
+COPY . .
+
+RUN go build -o herbie.bin
+
+########################################################################################################################
+
+FROM arm32v6/alpine:3.13
+
+RUN apk --no-cache add musl
+
+WORKDIR /app
+
+COPY --from=build-go /app/herbie.bin .
+
+ENTRYPOINT ["/app/herbie.bin"]
