@@ -1,4 +1,6 @@
 
+# docker run -d-restart=unless-stopped -mount type=bind,source=/home/pi/Servers/DiscordBots/herbie/feeds.db,target=/app/feeds.db herbie
+
 FROM arm32v6/golang:1.16-alpine3.13 AS build-go
 
 WORKDIR /app

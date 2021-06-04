@@ -38,9 +38,9 @@ var (
 	APIKey string
 	Site   = "https://ceruleanscrawling.wordpress.com"
 	Feeds  = []Feed{
-		{"/category/summus-proelium/feed", []string{"543593314746761228"}, "<@850455939625517096>"},
+		{"/category/summus-proelium/feed", []string{"543593314746761228"}, "<@&850455939625517096>"},
 		{"/category/uncategorized/feed", []string{"383419886250098691"}, "@everyone"},
-		{"/category/heretical-edge/feed", []string{"383419886250098691"}, "<@850455420912140320>"},
+		{"/category/heretical-edge/feed", []string{"383419886250098691"}, "<@&850455420912140320>"},
 		//{"/feed", []string{"383419886250098691"}, "@everyone"}, // Site wide feed. No longer used.
 	}
 )
