@@ -126,7 +126,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	switch m.Content {
 	case "Hey Herbie!":
-		linelist, err := ioutil.ReadFile("herbie.quotes")
+		linelist, err := ioutil.ReadFile("/app/herbie.quotes")
 		if err != nil {
 			return
 		}

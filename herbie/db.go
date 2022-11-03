@@ -69,7 +69,7 @@ func getStories() (map[string]bool, error) {
 
 func init() {
 	var err error
-	DB, err = sql.Open("sqlite3", "file:feeds.db")
+	DB, err = sql.Open("sqlite3", "file:/app/feeds.db")
 	if err != nil {
 		panic(err)
 	}
