@@ -140,28 +140,31 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			nlines = append(nlines, line)
 		}
 		if len(nlines) > 0 {
-			s.ChannelMessageSend(m.ChannelID, nlines[rand.Intn(len(nlines))])
+			_, err := s.ChannelMessageSend(m.ChannelID, nlines[rand.Intn(len(nlines))])
+			fmt.Println("Error responding to hey from:", m.ChannelID, err)
 		}
 	case "Herbie?":
-		s.ChannelMessageSend(m.ChannelID, "Try: `Hey Herbie!`. Herbie may also do fun things if you wish him a happy birthday at the right time of year...")
+		_, err := s.ChannelMessageSend(m.ChannelID, "Try: `Hey Herbie!`. Herbie may also do fun things if you wish him a happy birthday at the right time of year...")
+		fmt.Println("Error responding to question from:", m.ChannelID, err)
 	default:
 		t, msg := time.Now(), strings.ToLower(m.Content)
 		// September 4th, the day Flick throws Herbie through the portal.
 		if t.Month() == time.September && t.Day() == 4 {
 			if strings.Contains(msg, "happy") && strings.Contains(msg, "birthday") && strings.Contains(msg, "herbie") {
-				s.ChannelMessageSend(m.ChannelID, "Herbie seems pleased with your greeting.")
+				_, err := s.ChannelMessageSend(m.ChannelID, "Herbie seems pleased with your greeting.")
+				fmt.Println("Error responding to birthday wish from:", m.ChannelID, err)
 			}
 		}
 	}
 }
 
 func onConnect(s *discordgo.Session, r *discordgo.Ready) {
-	// Discard the error, it doesn't hurt anything if this fails.
-	_ = s.UpdateStatusComplex(discordgo.UpdateStatusData{
+	err := s.UpdateStatusComplex(discordgo.UpdateStatusData{
 		Status: "online",
 		Activities: []*discordgo.Activity{{
 			Name: "Type Herbie? for help.",
 			Type: discordgo.ActivityTypeCustom,
 		}},
 	})
+	fmt.Println("Error setting status:", err)
 }
